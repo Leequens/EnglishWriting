@@ -1,0 +1,31 @@
+\documentclass{article}
+\usepackage{ctex}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage[top=1in, bottom=1in, left=1.25in, right=1.25in]{geometry}
+\usepackage{lscape}
+\author{Zhang, Liqiang}
+\date{April 25,2018}
+\title{Using Human Brain Activity to Guide Machine Learning}
+
+\begin{document}
+\maketitle
+\par
+Machine learning is a field of computer science that builds algorithms that learn. In most of the time, these algorithms are used to recreate human capabilities such as adding a caption to a photo and driving a car. This paper demonstrate a new paradigm of ``neurally-weighted``machine learning, which takes fMRI measurements of human brain activity from subjects viewing images, and infuses these data into the training process of an object recognition learning algorithm to make it more consistent with the human.
+\par
+The human brain is a natural frame of reference for machine learning, because it has evolved to operate with extraordinary efficiency and accuracy in complicated and ambiguous environments.the author describe a method which make people can leverage the human brain's robust representations to guide a machine learning algorithm¡¯s decision boundary. The author invite a adult subject viewed 1,386 color 500?¡Á?500 pixel images of natural scenes, while being scanned in a 3.0 Tesla (3T) magnetic resonance imaging (MRI) machine.
+\par
+\[\varphi_h(Z)=max(0,1-z)\]
+\par
+Where z=y?f(x), y¡Ê{?1,+1} is the true label, and f(x)¡ÊR is the predicted output; thus, z denotes the correctness of a prediction. The HL function assigns a penalty to all misclassified data that is proportional to how erroneous the prediction is. with this method, a large activity weight c x is a positive example for a given binary classification task because it corresponds well to a canonical neural response pattern for the positive class, like the one in the bottom right of Panel C in Fig. 1.
+\begin{figure}
+  \centering
+  % Requires \usepackage{graphicx}
+  \includegraphics[height=5cm,width=7cm]{figure.jpg}\\
+  \caption{Example }\label{}
+\end{figure}
+
+\end{document}
+
+
