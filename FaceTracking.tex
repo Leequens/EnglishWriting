@@ -1,0 +1,30 @@
+\documentclass{article}
+\usepackage{ctex}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage[top=1in, bottom=1in, left=1.25in, right=1.25in]{geometry}
+\usepackage{lscape}
+\usepackage{cite}
+\author{Zhang, Liqiang}
+\date{April 29,2018}
+\title{Computer Vision Face Tracking For Use in a Perceptual User Interface}
+
+\begin{document}
+\maketitle
+\par
+In this paper, the author describe the development of the first core modulea:  4-degree of freedom color object tracker and its application to flesh-tone-based face tracking. The work described in this paper is part of a larger effort aimed at giving computers the ability to segment, track, and understand the pose, gestures, and emotional expressions of humans and the tools they might be using in front of a computer or settop box.
+\begin{figure}[H]
+  \centering
+  % Requires \usepackage{graphicx}
+  \includegraphics[height=8cm,width=12cm]{tupian.jpg}\\
+  \caption{CAMSHIFT}\label{Figure 1}
+\end{figure}
+
+\par
+In order to find a fast, simple algorithm for basic tracking, the author focused on color-based tracking and they drew on ideas from robust statistics and probability distributions. They chose to use a robust nonparametric technique for climbing density gradients to find the mode of probability distributions called the mean shift algorithm. Their new algorithm is CAMSHIFT which could adapt dynamically to the probability distribution it is tracking. For face tracking, CAMSHIFT tracks the X, Y, and Area of the flesh color probability distribution representing a face.
+\par
+In conclusion, CAMSHIFT is a simple, computationally efficient face and colored object tracker. as the authors have shown, even though CAMSHIFT was conceived as a simple part of a larger tracking system, it has many uses right now in game and 3D graphics¡¯ control. In the future, CAMSHIFT will be incorporated into larger, more complex, higher MIPs-demanding modules that provide more robust tracking, posture understanding, gesture and face recognition, and object understanding.
+\end{document}
+
+
