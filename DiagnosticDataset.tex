@@ -1,0 +1,30 @@
+\documentclass{article}
+\usepackage{ctex}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage[top=1in, bottom=1in, left=1.25in, right=1.25in]{geometry}
+\usepackage{lscape}
+\usepackage{cite}
+\author{Zhang, Liqiang}
+\date{May 1,2018}
+\title{A Diagnostic Dataset That Contains Minimal Biases}
+\twocolumn
+\begin{document}
+\maketitle
+\par
+A long-standing goal of artificial intelligence is to project a system which can reason and answer questions about visual information. But answering correctly these questions requires  perceptual abilities such as recognizing objects and spatial relationships. However,  many show only marginal improvements over strong baselines. In this paper, the author propose a diagnostic dataset for studying the ability of VQA systems to perform visual reasoning.\cite{Ray2016Question}
+\begin{figure}[H]
+  \centering
+  % Requires \usepackage{graphicx}
+  \includegraphics[height=6cm,width=7.5cm]{1.png}\\
+  \caption{A sample image and questions from CLEVR.}\label{}
+\end{figure}
+
+\par
+They call it as  the Compositional Language and Elementary Visual Reasoning dataset (CLEVR) It has lenging images and questions that test visual reasoning abilities such as counting, comparing,  as illustrated in Figure 1. The main components of CLEVR are objects and relationships, scene representation, image generation and question representation and question families and Question generation. CLEVR questions contain two types of relationships: spatial and same-attribute. The author define a question¡¯s size tobe the number of functions in its program and many questions can be correctly answered even when some subtasks are not solved correctly.
+\par
+The author has introduced CLEVR, a dataset designed to aid in diagnostic evaluation of visual question answering systems by minimizing dataset bias and providing rich ground-truth representations for both images and questions. These experiments demonstrate that CLEVR facilitates in-depth analysis not possible with other VQA datasets. These observations present clear avenues for future work and author  plan to use CLEVR to study models with explicit short-term memory.
+\bibliographystyle{plain}
+\bibliography{1}
+\end{document}
