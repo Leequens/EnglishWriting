@@ -1,0 +1,38 @@
+\documentclass{article}
+\usepackage{ctex}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage[top=1in, bottom=1in, left=1.25in, right=1.25in]{geometry}
+\usepackage{lscape}
+\usepackage{cite}
+\author{Zhang, Liqiang}
+\date{May 3,2018}
+\title{Normalized Cuts and Image Segmentation}
+\twocolumn
+\begin{document}
+\maketitle
+\par
+The author propose a novel approach for solving the perceptual grouping problem in vision.They treat image segmentation as a graph partitioning problem and propose a novel global criterion, the normalized cut, for segmenting the graph and their approach aims at extracting the global impression of an image. The normalized cut criterion measures both the total dissimilarity between the different groups as well as the total similarity within the groups.\cite{Alon1986Eigenvalues}
+\par
+A graph G ? ?V; E? can be partitioned into two disjoint sets, A; B, A [ B ? V , A \ B ? ;, by simply removing edges connecting the two parts. The degree of dissimilarity between these two pieces can be computed as total weight of the edges that have been removed. In graph theoretic language, it is called the cut:
+\begin{equation} \label{}
+cut(A,B)=\sum w(u,v)
+\end{equation}
+\par
+Assuming the edge weights are inversely proportional to the distance between the two nodes, we see the cut that partitions out node n1 or n2 will have a very small value. In fact, any cut that partitions out individual nodes on the right half will have smaller cut value than the cut that partitions the nodes into the left and right halves. The optimal bipartitioning of a graph is the one that minimizes this cut value. Although there are an exponential number of such partitions, finding the minimum cut of a graph is a well-studied problem and there exist efficient algorithms for solving it.
+\begin{figure}[H]
+  \centering
+  % Requires \usepackage{graphicx}
+  \includegraphics[height=5cm,width=7.5cm]{1.png}\\
+  \caption{A case where minimum cut gives a bad partition.}\label{}
+\end{figure}
+To avoid this unnatural bias for partitioning out small sets of points, author propose a new measure of disassociation between two groups. Instead of looking at the value of total edge weight connecting the two partitions, their measure computes the cut cost as a fraction of the total edge connections to all the nodes in the graph. They call this disassociation measure the normalized cut :
+\begin{equation} \label{}
+Nassoc(A.B)=\frac{assoc(A,A)}{assoc(A,V)}+\frac{assoc(B,B)}{assoc(B,V)}
+\end{equation}
+\par
+\bibliographystyle{plain}
+\bibliography{1}
+
+\end{document}
