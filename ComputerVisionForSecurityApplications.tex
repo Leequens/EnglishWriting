@@ -1,0 +1,30 @@
+\documentclass{article}
+\usepackage{ctex}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage[top=1in, bottom=1in, left=1.25in, right=1.25in]{geometry}
+\usepackage{lscape}
+\usepackage{cite}
+\author{Zhang, Liqiang}
+\date{May 5,2018}
+\title{Computer Vision In Security Applications}
+\twocolumn
+\begin{document}
+\maketitle
+\par
+This paper will review some of the most recent developments in computer vision and image processing for challenging outdoor perimeter security applications. It also describes the efforts of development teams to integrate some of these advanced ideas into coherent prototype development systems.There are 2 ways in which neural classifiers can be incorporated into video based PIDS: to perform low level processing of pixel values directly; and to perform classification on the outputs of image processing operators which process the raw pixel data first.\cite{Freer1996Automatic}
+\par
+The low level approach has the advantages that the networks can leam highly non-linear statistical models for localised scene activity. This allows a system to be built which is capable of
+leaming about complex, highly localised scene variations such as moving foliage, shadows and insect activity. An example of such an approach can be found.
+\begin{figure}[H]
+  \centering
+  % Requires \usepackage{graphicx}
+  \includegraphics[height=6cm,width=7.5cm]{1.png}\\
+  \caption{Analysis of 2 rabbit track.}\label{}
+\end{figure}
+It is self evident that there is much more information present in a video stream than can be meaningfully processed by current technology. The difference is analytical prowess between even the most advanced standards in computer vision and an average security guard bear witness to this. That said, increasing pressures to increase guard effectiveness over long periods and reduce the cost of providing guarding services remain the driving forces behind research into advanced computer vision techniques. Such research will benefit from both continued work in basic areas as well as integrated vision systems, designed around the operational needs of any particular site. PSDB hope to be able to report on progress of their work in threat assessment using integrated systems in future conferences.
+\par
+\bibliographystyle{plain}
+\bibliography{1}
+\end{document}
