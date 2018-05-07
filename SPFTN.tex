@@ -1,0 +1,71 @@
+\documentclass{article}
+\usepackage{ctex}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage[top=1in, bottom=1in, left=1.25in, right=1.25in]{geometry}
+\usepackage{lscape}
+\usepackage{cite}
+\usepackage{amsfonts,amssymb,amsmath}
+\author{Zhang, Liqiang}
+\date{May 7,2018}
+\title{A Self-Paced Fine-Tuning Network for Segmenting Objects in Weakly Labelled Videos}
+\twocolumn
+\begin{document}
+\maketitle
+\par
+\section{Self-Paced Fine-Tuning}
+With a massive amount of videos can be easily accessed online, an exciting opportunity to learn visual concepts and object models is offered. However, it is hard to directly exploit these online videos in traditional ways because most of online videos are weakly labelled\cite{Brox2012Object}. In order to tackle the aforementioned limitations, author propose a novel self-paced fine-tuning network (SPFTN) in this paper. As shown in Fig.~\ref{1}, given a group of videos that are weakly labelled as containing common objects from one semantic category, the proposed approach first prepares training data by decomposing these videos into frames and generating segmentation proposals for these frames.\cite{Bengio2009Curriculum}
+\begin{figure}[H]
+  \centering
+  % Requires \usepackage{graphicx}
+  \includegraphics[height=5cm,width=7.5cm]{1.png}\\
+  \caption{. The proposed self-paced fine-tuning network-based framework for object segmentation in weakly labelled videos.}\label{1}
+\end{figure}
+\section{Objective Function}
+Given a collection of K video frames $({I_{k}})_{k=1}^{K}$ extracted from a set of weakly labelled videos from one semantic category, the input dimension of the designed network architecture is set to be 244 ¡Á 244. With the input of the video frames and the initial \textbf{X} and \textbf{Y}, the learning objective gradually discovers confident training samples and use them to fine-tune DNN via mainly minimizing a weighted prediction loss term and a self-paced regularizer:
+\begin{equation} \label{2}
+\begin{split}
+\mathop{min}\limits_{W,Y,V}\textbf{E(W,Y,X)}=&r(\textbf{W})+\sum \limits_{k=1}^{K}+f(\textbf{V};\textbf{p},\lambda,\gamma,\tau,),\\
+&s.t. V\in[0,1]^{d\times{K}},\textbf{p}\in[0,1]^K,\\
+&\sum_{k}\parallel{v_k}\parallel_1\in(0,d\times{K}),\\
+&\sum_{k}\parallel{y_k}\parallel_1\in(0,d\times{K}).
+\end{split}
+\end{equation}
+\par
+Here r(.) indicates the squared $\ell_2$ norm,$\textbf{W}$ indicatesthe trainable parameters among the network, $\textbf{V}=[v_1,v_2...,v_K]$ denotes the weight matrix which reflects the self-paced weights for all the pixels of the video frames.
+\begin{equation} \label{3}
+\begin{split}
+L(y_k,v_k,&\Phi(I_k\mid\textbf{W}))=\\
+&\sum\limits_{i=1}^dv_k^imax(1-y_k^i\cdot \Phi(I_k\mid\textbf{W}^i,0)^2,
+\end{split}
+\end{equation}
+\par
+Where (\ref{3}) $v_k^i,y_k^i,$ and $\Phi(I_k\mid\textbf{W})^i$ indicate the i-th dimension of the weight vector $v_k$, pseudo label vector $y_k$, and prediction vector $\Phi(I_k\mid\textbf{W})^i$, respectively.
+\section{Model Analysis}
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+Different regularizers & IOU \\
+\hline
+OURS-GC: OURS w/o group curriculum & 0.569 \\
+\hline
+OURS-GC2: OURS w/o the second term in GC & 0.564 \\
+\hline
+OURS-GC1: OURS w/o the first term in GC & 0.589\\
+\hline
+OURS with sample diversity term of [13] & 0.583\\
+\hline
+\textbf{OURS} &  \textbf{0.612}\\
+\hline
+\end{tabular}
+\caption{Evaluation of the self-paced regularizers on DAVIS.}
+\label{tab1}
+\end{table} 
+\par
+The results reported in Table.~\ref{tab1} indicate that each of the regularization terms used in the proposed group curriculum regularizer can benefit the learning procedure\cite{Liu2015Predicting}, while simultaneously using both of them obtains more significant performance gain.
+\par
+\bibliographystyle{plain}
+\bibliography{1}
+\end{document}
