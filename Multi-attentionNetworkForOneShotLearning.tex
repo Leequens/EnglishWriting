@@ -1,0 +1,79 @@
+\documentclass{article}
+\usepackage{ctex}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage[top=1in, bottom=1in, left=1.25in, right=1.25in]{geometry}
+\usepackage{lscape}
+\usepackage{cite}
+\usepackage{amsfonts,amssymb,amsmath}
+\author{Zhang, Liqiang}
+\date{May 9,2018}
+\title{Multi-attention Network for One Shot Learning}
+\twocolumn
+\begin{document}
+\maketitle
+\par
+\section{Multi-attention Network}
+\par
+The author propose the approach which use the class tag to guide an attention mechanism able to identify which parts of the training image are most relevant. This method is motivated by the observation that human beings can better interpret an exemplar image if its class tag is well understood. \cite{Cao2015Look}For example, as illustrated in Fig.~\ref{1}, from a single exemplar it is difficult to understand which part of the image is relevant to the class, which leads to ambiguity in recognition.
+\begin{figure}[H]
+  \centering
+  % Requires \usepackage{graphicx}
+  \includegraphics[height=5cm,width=7.5cm]{1.png}\\
+  \caption{Given an exemplar image of a novel class, the objective of one-shot learning is to identify the images belonging to the same class from a database. }\label{1}
+\end{figure}
+The contributions of this work are as follows:
+\begin{itemize}
+\item{Showing that class tag information can contribute oneshot learning, and devise a novel method which is capable of exploiting this information.}
+\item{Proposing an attention network that can generate attention maps for creating the image representation of an exemplar image in novel class based on its class tag.}
+\item{Furthering propose a multi-attention scheme to boost the performance of the proposed attention network.}
+\item{Collecting two new datasets and establish an experimental protocol for evaluating one-shot learning.}
+\end{itemize}
+\par
+\section{Visual Feature Encoding and Weighted Pooling}
+The author apply a local feature encoder to each of the local feature. Formally, the encoder is a mapping function defined as follows:
+\begin{equation} \label{1}
+V_i=f(W_{v}x_{i}+b_v)
+\end{equation}
+where $f(a)=max(0,a)$ is a rectified linear unit (ReLU), $x_i$ is a local feature, $W_v\in{R^{d\times d_v}}$ and $b_v\in R^d$ are the model parameters.
+\par
+Instead of directly aggregating these local features to create the image representation, we pool these features via the guidance of a set of attention maps. The basic form of this pooling operation is as follows:
+\begin{equation} \label{2}
+g=\sum\limits_{i=1}^{\mid X\mid}
+\end{equation}
+where $ai$ indicates the attention value on the $i$-th coding vector. In the following section, we introduce the details of the calculation of $ai$.
+\par
+\section{Results on Artifact Dataset}
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+\multirow{4}{*}{close-world}
+&SE (256D) & 27.8\% \\
+
+&SE (512D) &  28.2\% \\
+
+&SE + Joint Bayesian &  31.5\% \\
+
+&Attention & \textbf{34.5\%}\\
+\hline
+\multirow{5}{*}{open-world}
+&SE (256D) & 11.6\% \\
+
+&SE (512D) & 12.2\% \\
+
+&SE + Joint Bayesian & 11.4\%\\
+
+&Attention & \textbf{15.2\%}\\
+\hline
+\end{tabular}
+\caption{Comparison of the attention network to alternative solutions on the Artifact Dataset.}
+\label{tab1}
+\end{table}
+\par
+Table.~\ref{tab1} demonstrates the results on the Artifact Dataset. \cite{Chen2012Bayesian}This means simply increasing the dimensionality of the coding vector cannot help to capture more useful information.
+\bibliographystyle{plain}
+\bibliography{1}
+\end{document}
