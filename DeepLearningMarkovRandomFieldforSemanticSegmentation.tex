@@ -1,0 +1,68 @@
+\documentclass{article}
+\usepackage{ctex}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage[top=1in, bottom=1in, left=1.25in, right=1.25in]{geometry}
+\usepackage{lscape}
+\usepackage{cite}
+\usepackage{amsfonts,amssymb,amsmath}
+\author{Zhang, Liqiang}
+\date{May 11,2018}
+\title{Deep Learning Markov Random Fieldfor Semantic Segmentation}
+\twocolumn 
+\begin{document}
+\maketitle
+\par
+\section{Markov Random Field}
+\par
+Since pixels in natural images or videos generally exhibit strong correlation, jointly modeling label distribution in all locations is desirable. To capture these contextual information, Markov random field and conditional random field are commonly used as classic frameworks for semantic segmentation. \cite{Isola2013Scene}They model the joint distribution of labels by defining both unary term and pairwise terms. Unary term reflects the per-pixel confidence of assigning labels while pairwise terms capture the inter-pixel constraints. \begin{figure}[H]
+  \centering
+  % Requires \usepackage{graphicx}
+  \includegraphics[height=5cm,width=7.5cm]{1.png}\\
+  \caption{(a) The network architecture of a deep parsing network (DPN). (b) DPN extends a contemporary CNN architecture to model unary terms and additional layers are carefully devised to approximate the mean field algorithm (MF) for pairwise terms. (c) DPN enables dynamic linking of nodes in Markov Random Field (MRF) by incorporating domain knowledge. }\label{1}
+\end{figure} 
+\par
+\section{The Approach}
+ \noindent\textbf{Markov Random Field}, MRF is an undirected graph where each node represents a voxel in a video, \textbf{I}, and each edge represents relation between voxels, as shown in Fig.~\ref{1}(b).  Each node is associated with a binary latent variable, $y_i^u\in{\{0,1\}}$. indicating whether a voxel \textbf{i}=[$i t_i$]has label u. Here, $i$ indicates a voxel¡¯s spatial index with respect to an image, and $t_i$ is its temporal index with respect to a sequence. We have $\forall{u}\in{L}=\{1,2...,l\}$, representing a set of $l$ labels.\cite{Jordan1999An} The energy function of MRF is written as
+\begin{equation} \label{1}
+E(y)=\sum\limits_{\forall i\in V}\Phi(y_i^u)+\sum\limits_{\forall{i,j}\varepsilon\in V}\Psi(y_i^u,y_j^u),
+\end{equation}
+where $y,V,$ and $\varepsilon$ denote a set of latent variables, nodes, and edges, respectively, respectively.
+\par
+ \noindent\textbf{Dynamic Node Linking},Traditional approaches usually define the edges $\varepsilon$ on rectangular grid in 3-D space. However, when large motion exists, the actual temporal trajectory for certain pixel will not reside inside a rigid cube, which means the rectangular grid assumption does not hold.Specifically, we keep the 2-D structure in the spatial domain, as illustrated in Fig.~\ref{1}(c).
+\begin{equation} \label{2}
+(i,j)\in\varepsilon_t\Longleftrightarrow j=i+\bigtriangleup_{i\to j},
+\end{equation}
+ \noindent\textbf{Unary and Pairwise Terms}, Intuitively, the unary terms represent per-voxel classifications, while the pairwise terms represent a set of smoothness constraints. The unary term in Eqn.~\ref{1} is typically defined as
+\begin{equation} \label{2}
+\Phi(y_i^u)=-lnp(y_i^u=1\mid\textbf{I}),
+\end{equation}
+where $p(y_i^u=1\mid\textbf{I})$indicates the probability of the presence of label $u$ at voxel $i$, modeling by $VGG_16$. To simplify discussions, we abbreviate it as $p_i^u$.The smoothness term can be formulated as
+\begin{equation} \label{2}
+\Psi(y_i^u,y_j^u)=\mu(u,v)d(\textbf{i,j}),
+\end{equation}
+where the first term learns the penalty of global co-occurrence between any pair of labels. For example, the output value of $\mu(u,v)$ is large if $u$ and $v$ should not coexist.
+\section{Experiments}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{c|c|c|c|c}
+\hline
+name & training & validation & testing & video data \\
+\hline
+\hline
+VOC12 & 10582 & 1449 & 1456 & no \\
+Cityscapes & 2975 & 500 & 1525 & no \\
+CamVid & 367 & - & 233 & yes \\
+\hline
+\end{tabular}
+\caption{Evaluation of the self-paced regularizers on DAVIS.}
+\label{tab1}
+\end{table}
+\par
+\noindent\textbf{Dataset}.\cite{Chen2014Semantic} The author choose those two benchmarks to evaluate the original DPN. On the other hand, CamVid dataset is composed of several video sequences, which is suitable for the evaluation of spatial-temporal DPN. They summarize the information of all datasets they used in Table.~\ref{tab1}.
+\bibliographystyle{plain}
+\bibliography{1}
+\end{document} 
