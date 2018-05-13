@@ -1,0 +1,71 @@
+\documentclass{article}
+\usepackage{ctex}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage[top=1in, bottom=1in, left=1.25in, right=1.25in]{geometry}
+\usepackage{lscape}
+\usepackage{cite}
+\usepackage{amsfonts,amssymb,amsmath}
+\author{Zhang, Liqiang}
+\date{May 13,2018}
+\title{Towards Context-aware Interaction Recognition for Visual Relationship Detection}
+\twocolumn
+\begin{document}
+\maketitle
+\par
+\section{Object Interaction Recognition}
+\par
+Object interaction recognition is a fundamental problem in computer vision and it can serve as a critical component for solving many visual recognition problems such as action recognition, visual phrase recognition, sentence to image retrieval and visual question answering. There are two ways to model the interaction and its context. The first one treats the combination of interaction and its context as a single class, but it is very inefficient to collect training images for each combination. Another way is to model the interaction and the context separately, but which can lead to poor recognition performance due to the difficulty of associating the interaction with certain visual appearance in the absence of context information.
+\begin{figure}[H]
+  \centering
+  % Requires \usepackage{graphicx}
+  \includegraphics[height=4cm,width=7.5cm]{1.png}\\
+  \caption{(Comparison of two baseline interaction recognition methods and the proposed approach.}\label{1}
+\end{figure}
+The two baseline methods take two extremes. For one extreme, Fig.~\ref{1}(a) treats the combination of the interaction and its context as a single class. For another extreme, Fig.~\ref{1}(c) classifies the interaction separately from its context. Our method Fig.~\ref{1}(b) lies somewhere between Fig.~\ref{1}(a) and Fig.~\ref{1}(c). We still build one classifier for each interaction but the classifier parameter is also adaptive to the context of the interaction, as shown in the example in Fig.~\ref{1}(b).
+\section{Methods}
+The author assume that interaction classifier takes a linear classifier form $y_p=\textbf{w}_p^T\phi(I), \textbf{w}_p\in R^d$, where$y_p$ is the classification score for the $p$-th interaction and is the feature representation extracted from the input image. The classifier parameters for the p-th interaction $\textbf{w}_p$ are a function of $(O1, O2)$, that is, the context of the $p$-th h interaction. It is designed as the summation of the following two terms:
+\begin{equation} \label{1}
+\textbf{w}_p(O1,O2)=\bar{\textbf{w}}-p+r_p(O1,O2),
+\end{equation}
+where the first term ¡¥wp is independent of the context; it plays a role which is similar to the traditional context-independent interaction classifier. The second term rp$(O1, O2)$ can be viewed as an auxiliary classifier generated from the information of context $(O1, O2)$.
+\par
+\noindent Eq.~\ref{1} are distinct per interaction type p while the projection matrix Q is shared across all interactions. All of these parameters are learnt at training time.
+\section{Evaluation on the visual phrase dataset}
+As seen from Table 4, AP+C+CAT again achieves the best performance. In comparison with the performance of \cite{Soomro2012UCF101}, our method improves most in the zero-shot learning setting.
+\begin{table}[htbp]
+\centering
+\begin{tabular}{c|c|c|c}
+\hline
+Method & Phrase & Detection & Zero-Shot \\
+\hline
+Visual Phrase & 52.7 & 49.3 & - \\
+\hline
+Language Priors & 82.7 & 78.1 & 23.9 \\
+\hline
+Baseline1-app & 70.1 & 65.6 & 12.4 \\
+\hline
+Baseline1-spatial & 68.3 & 63.6 & 10.3  \\
+\hline
+Baseline2-app & 77.5 & 72.3 & 11.0  \\
+\hline
+Baseline2-spatial & 15.7 & 10.4 & 1.1  \\
+\hline
+Spatial+C & 84.9 & 80.8 & 27.6 \\
+\hline
+AP+C & 85.9 & 81.6 & 28.5  \\
+\hline
+AP+C+AT & 86.2 & 82.1 & 28.8  \\
+\hline
+AP+C+CAT & \textbf{86.8} & \textbf{82.9} & \textbf{30.2} \\
+\hline
+\end{tabular}
+\caption{ Comparison of performance on the Visual Phrase dataset.}
+\label{tab1}
+\end{table}
+\par
+\bibliographystyle{plain}
+\bibliography{1}
+\end{document} 
