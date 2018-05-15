@@ -1,0 +1,69 @@
+\documentclass{article}
+\usepackage{ctex}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{enumerate}
+\usepackage{multirow}
+\usepackage[top=1in, bottom=1in, left=1.25in, right=1.25in]{geometry}
+\usepackage{lscape}
+\usepackage{cite}
+\usepackage{amsfonts,amssymb,amsmath}
+\author{Zhang, Liqiang}
+\date{May 15,2018}
+\title{Saliency Density Maximization for Efficient Visual Objects Discovery}
+\twocolumn
+\begin{document}
+\maketitle
+\par
+\section{Maximum Saliency Density} 
+THE STUDIES of psychology and cognitive science have shown that the human perception is attentional and selective \cite{Liu2007Learning}. For example, when watching images or videos, not every pixel is of equal importance to us. In most cases, our visual attention mainly focuses on a salient sub-region of an image, e.g. the salient object, and we follow this salient object in an image sequence. The major limitation is that it is troublesome to train the model or difficult to predefine the amount of saliency the salient object should contain, as it depends on the size and the shape of the salient object, as well as how cluttered the background is. To address the above mentioned problems, the author propose a novel unsupervised method to discover salient objects from various saliency maps of images or videos. They propose to locate the object by finding a bounding box of the maximum saliency density (MSD).
+\begin{figure}[H]
+  \centering
+  % Requires \usepackage{graphicx}
+  \includegraphics[height=2cm,width=7.5cm]{1.png}\\
+  \caption{The object detection result using the saliency map proposed in \cite{Ma2003Contrast}.}\label{1}
+\end{figure}
+\section{Major Contribution} 
+\begin{enumerate}[1)]
+\item The author first formulate the task of the unsupervised salient object detection as the maximum saliency density discovery problem, which well balance the size of the saliency object and the saliency it contains\cite{Itti2004Automatic}. It is also compatible to different types of saliency maps or a fused saliency map.
+\item To obtain the global optimal solution of the saliency density maximization problem, we propose an efficient branch-and-bound search algorithm, which is based on the saliency density rather than the traditional classifi- cation scores. Derivation of the upper-bound estimation and the average convergent time (referred to table II) show its efficiency on salient object detection in both images and videos.  
+\end{enumerate}    
+\section{Related Work} 
+\begin{enumerate}[1)]
+\item $ Minimum Rectangle with Fixed Saliency (MRFS):$ the binary saliency map is adopted and the formulation of salient object detection by MRFS can be written as in Eq.~\ref{1}:
+\par 
+\begin{equation} \label{1}
+W*=argminA(h(W)), 
+\end{equation}
+where $A(h(W))$ measures the area size of $h(W)$ and $S_b$ is the binary image of $S$. $W$ is the sub-window of the whole image region $I$ and $\lambda$ ¦Ë is the fixed percentage. 
+\par
+\item $Maximum Saliency Region (MSR): $ the idea of salient object detection in [40] can be formulated as in Eq.~\ref{2}:
+\begin{equation} \label{2}
+h(W)=\sum_{S_b(x,y)\in W}S_b(x,y),
+\end{equation}
+where $S_b(x,y)$ is obtained in a similar way in Eq.~\ref{1} with a slight difference that $S_b(x,y)=-1$ when $S(x,y)<\tau$ From Eq.~\ref{2}, the salient object is located with the
+region $W*$ that contains the maximum of saliency.
+\end{enumerate} 
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+ro=9:16 & Frame & Global \\ 
+\hline
+precision & 73.69\% & 82.30\% \\
+\hline
+recall & 93.36\% & 86.67\% \\
+\hline
+F?measure & 79.26\% & 83.71\% \\
+\hline
+\end{tabular}
+\caption{PRECISION, RECALL AND F-MEASURE FOR FRAME SALIENT OBJECT AND GLOBAL SALIENT SUB-IMAGE DETECTION IN TENNIS VIDEO CLIP.}
+\label{tab1}
+\end{table}
+\par
+The performance on precision, recall and F-measure for the method in the tennis video is given in table I, from which we can see the detection method can correctly locate the salient
+object either in a single frame or in a video shot.
+\bibliographystyle{plain}
+\bibliography{1}
+\end{document}
