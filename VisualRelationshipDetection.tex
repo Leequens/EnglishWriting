@@ -1,0 +1,72 @@
+\documentclass{article}
+\usepackage{ctex}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{enumerate}
+\usepackage{multirow}
+\usepackage[top=1in, bottom=1in, left=1.25in, right=1.25in]{geometry}
+\usepackage{lscape}
+\usepackage{cite}
+\usepackage{amsfonts,amssymb,amsmath}
+\author{Zhang, Liqiang}
+\date{May 17,2018}
+\title{Towards Context-aware Interaction Recognition for Visual Relationship Detection}
+\twocolumn
+\begin{document}
+\maketitle
+\par
+\section{Visual Relationship Detection} 
+Recognizing how objects interact with each other is a crucial task in visual recognition. Then most current methods to define the context of the interaction suffer limitations, some scales poorly with the number of combinations and fails to generalize to unseen combinations, the other often leads to poor interaction recognition performance due to the difficulty of designing a interaction classifier\cite{Liu2007Learning}. To mitigate those drawbacks, the author proposes an alternative, context-aware interaction recognition framework. The key to the method is to explicitly construct an interaction classifier which combines the context, and the interaction. The context is encoded via word2vec into a semantic space, and is used to derive a classification result for the interaction. Fig.~\ref{1} is Comparison of two baseline interaction recognition methods and the proposed approach.
+\begin{figure}[H]
+  \centering
+  % Requires \usepackage{graphicx}
+  \includegraphics[height=2cm,width=7.5cm]{6.png}\\
+  \caption{The two baseline methods take two extremes. (a) treats the combination of the interaction and its context as a single class. (c) classifies
+the interaction separately from its context. (b) lies somewhere between (a) and (c).}\label{1}
+\end{figure}
+\section{Context-aware interaction classification framework} 
+In general, an interaction and its context can be expressed as a triplet $O1-P-O2$, where $P$ denotes the interaction, and $O1$ and $O2$ denote its subject and object respectively. In this study, the author assume the interaction context $(O1,O2)$ has been detected by a detector. It is designed as the summation of the following two terms:
+\begin{equation} \label{1}
+w_p(O1,O2)=\bar{w}_p+r_p(O11,O2),
+\end{equation}
+where the first term $\bar{w}_p$ is independent of the context; it plays a role which is similar to the traditional context-independent interaction classifier. The second term $r_p(O1, O2) $ can be viewed as an auxiliary classifier generated from the information of context $(O1, O2)$.
+\begin{equation} \label{1}
+r_p(O1,O2)=V_Pf(QE(O1,O2)),
+\end{equation}
+where $E(O1,O2)\in R^{2e}$ is the concatenation of the edimensional word2vec embeddings of $(O1, O2)$. Note that $V_P$ and $\bar{w}_p$ in Eq.~\ref{1} are distinct per interaction type $p$ while the projection matrix $Q$ Q is shared across all interactions. All of these parameters are learnt at training time.
+\section{Evaluation on the visual phrase dataset}
+As seen from Table \ref{tab1}, AP+C+CAT again achieves the best performance. In comparison with the performance of \cite{Itti2004Automatic}, the method improves most in the zero-shot learning setting.
+\begin{table}[htbp]
+\centering
+\begin{tabular}{c|c|c|c}
+\hline
+Method & Phrase & Detection & Zero-Shot  \\
+\hline
+Visual Phrase & 52.7 & 49.3 & -  \\
+\hline
+Language Priors & 82.7 & 78.1 & 23.9  \\
+\hline
+Baseline1-app & 70.1 & 65.6 & 12.4  \\
+\hline
+Baseline1-spatial & 68.3 & 63.6 & 10.3  \\
+\hline
+Baseline2-app & 77.5 & 72.3 & 11.0  \\
+\hline
+Baseline2-spatial & 15.7 & 10.4 & 1.1  \\
+\hline
+Spatial+C & 84.9 & 80.8 & 27.6  \\
+\hline
+AP+C & 85.9 & 81.6 & 28.5  \\
+\hline
+AP+C+AT & 86.2 & 82.1 & 28.8\\
+\hline
+AP+C+CAT & \textbf{86.8} & \textbf{82.9} & \textbf{30.2}  \\
+\hline
+\end{tabular}
+\caption{Comparison of performance on the Visual Phrase dataset.}
+\label{tab1}
+\end{table}
+\bibliographystyle{plain}
+\bibliography{1}
+\end{document}
