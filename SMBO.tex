@@ -1,0 +1,53 @@
+\documentclass{article}
+\usepackage{ctex}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{enumerate}
+\usepackage{multirow}
+\usepackage[top=1in, bottom=1in, left=1.25in, right=1.25in]{geometry}
+\usepackage{lscape}
+\usepackage{cite}
+\usepackage{amsfonts,amssymb,amsmath}
+\author{Zhang, Liqiang}
+\date{May 19,2018}
+\title{Progressive Neural Architecture Search}
+\twocolumn
+\begin{document}
+\maketitle
+\par
+\section{SMBO}
+The author propose a new method for learning the structure of convolutional neural networks that is more e?cient than recent state-of-the-art methods based on reinforcement learning and evolutionary algorithms. The approach uses a sequential model-based optimization (SMBO) strategy, in which we search for structures in order of increasing complexity\cite{Krizhevsky2009Learning}, while simultaneously learning a surrogate model to guide the search through structure space. This structures achieve state of the art classi?cation accuracies on CIFAR-10 and ImageNet.
+\par
+The approach that the author propose t is able to learn a CNN which matches previous state of the art in terms of accuracy, while requiring 5 times fewer model evaluations during the architecture search. 
+\section{Architecture Search Space}
+To evaluate a cell, it have to convert it into a CNN. To do this, the author stack a prede?ned number of copies of the basic cell (with the same structure, but untied weights), using either stride 1 or stride 2, as shown in Fig.~\ref{1} (right). The number of stride-1 cells between stride-2 cells is then adjusted accordingly with up to N number of repeats. At the top of the network, we use global average pooling, followed by a softmax classi?cation layer. They then train the stacked model on the relevant dataset.
+\begin{figure}[H]
+  \centering
+  % Requires \usepackage{graphicx}
+  \includegraphics[height=6cm,width=7.5cm]{1.png}\\
+  \caption{ Left: The best cell structure found by our Progressive Neural Architecture Search, consisting of 5 blocks. Right: We employ a similar strategy as \cite{Stanley2014Evolving} when constructing CNNs from cells on CIFAR-10 and ImageNet. Note that we learn a single cell type instead of distinguishing between Normal and Reduction cell.}\label{1}
+\end{figure}
+The overall CNN construction process is identical to \cite{Williams1992Simple}, except the author only use one cell type (we do not distinguish between Normal and Reduction cells, but instead emulate a Reduction cell by using a Normal cell with stride 2), and the cell search space is slightly smaller (since we use fewer operators and combiners).
+\newpage
+\section{Search E?ciency}
+The results are shown in Table.~\ref{tab1}. We see that PNAS is up to 5 times faster in terms of the number of models it trains and evaluates. 
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+B & Top & Accuracy &  PNAS  & NAS & Speedup(models) & Speedup(ex.) \\
+\hline
+5 & 1 & 0.9183 & 1160 & 5808 & 5.0 & 8.2  \\
+\hline
+5 & 5 & 0.9161 & 1160 & 4100 & 3.5 & 6.8  \\
+\hline
+5 & 25 & 0.9136 & 1160 & 3654 & 3.2 & 6.4 \\
+\hline
+\end{tabular}
+\caption{ Relative e?ciency of PNAS (using MLP-ensemble predictor) and NAS under the same search space.}
+\label{tab1}
+\end{table}
+\bibliographystyle{plain}
+\bibliography{1}
+\end{document} 
