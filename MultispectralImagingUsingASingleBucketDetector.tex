@@ -1,0 +1,58 @@
+\documentclass{article}
+\usepackage{ctex}
+\usepackage{xcolor}
+\usepackage{enumerate}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage[top=1in, bottom=1in, left=1.25in, right=1.25in]{geometry}
+\usepackage{lscape}
+\usepackage{cite}
+\usepackage{amsfonts,amssymb,amsmath}
+\author{Zhang, Liqiang}
+\date{May 19, 2018}
+\title{Multispectral Imaging Using a Single Bucket Detector}
+\twocolumn
+\begin{document}
+\maketitle
+\par
+Multispectral imaging is a technique capturing spatial-spectral data cubes of scenes, which contain a set of 2D images under different wavelengths. With both spatial and spectral resolving abilities, it is extremely useful and vital for surveying scenes and extracting detailed information\textcolor{blue}{\cite{Garini2006Spectral}}. Now, the multispectral imagers mostly utilize dispersive optical devices or narrow band filters to separate lights of different wavelengths, and then use an array detector to record them separately. Despite diverse principles and setups of the above multispectral
+imaging methods, photons are detected separately either in the spatial or spectral domain using array detectors. Therefore, these multispectral imagers are photon inefficient and spectrum range limited. Besides, they are usually highly expensive.
+\par
+To produce the advantages of SPI in multispectral imaging, there are two intuitional ways. One is to resolve the spectra of collected lights at the detector. Another straightforward way is to directly extend the 2D spatial modulation in conventional SPI to 3D spatial-spectral modulation using two spatial light modulators\textcolor{blue}{\cite{Lee2014Building}}. However, this would largely increase requisite projections and corresponding computation complexity for reconstruction. So the author propose a novel multispectral imaging technique utilizing SPI, termed as multispectral single pixel imaging (MSPI)\textcolor{blue}{\cite{Zhang2015Single}}, without increasing requisite projections and capturing time compared to conventional SPI. The main difference between MSPI and conventional SPI is illustrated in Fig.~\textcolor{red}{\ref{1}}.
+\begin{figure}[H]
+  \centering
+  % Requires \usepackage{graphicx}
+  \includegraphics[height=5cm,width=10cm]{1.png}\\
+  \caption{ Illumination¡¯s difference between conventional single pixel imaging (SPI) and the proposed multispectral single pixel imaging (MSPI).}\label{1}
+\end{figure}
+\begin{equation} \label{1}
+y_t=b_0+\sum^{T/2}_{i=1}\{b_i sin({\frac{2\pi i}{T}}t+\phi_i)\},
+\end{equation}
+In Eq.~\textcolor{red}{\ref{1}}, $b_0=\frac{1}{T}\sum^{T-1}_{t=0}y_t$, $b_i=\frac{2}{T}\sqrt{[\sum^{T-1}_{t=0}y_t cos(\frac{2\pi i}{T}t)]^2}$, and $\phi_i=arctan\frac{\sum^{T-1}_{t=0}y_tsin({\frac{2\pi i}{T}}t)}{\sum^{T-1}_{t=0}y_t cos(\frac{2\pi i}{T}t)}$. Specifically, $b_0$ is the direct current component indicating the average of all the measurements, and $b_i$ indicates the energy of the $i$th sinusoidal function at frequency $\frac{i}{T}$ As stated before, each wavelength band corresponds to a specific sinusoidal modulation frequency. Thus, the above coefficients at the dominant frequencies are exactly the response signals corresponding to different wavelength bands. Here we adopt fast Fourier transform (FFT) to transfer the measurements into Fourier space, with computation complexity being $O(nlogn)$.
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+Different regularizers & IOU \\
+\hline
+OURS-GC: OURS w/o group curriculum & 0.569 \\
+\hline
+OURS-GC2: OURS w/o the second term in GC & 0.564 \\
+\hline
+OURS-GC1: OURS w/o the first term in GC & 0.589\\
+\hline
+OURS with sample diversity term of [13] & 0.583\\
+\hline
+\textbf{OURS} &  \textbf{0.612}\\
+\hline
+\end{tabular}
+\caption{Evaluation of the self-paced regularizers on DAVIS.}
+\label{tab1}
+\end{table}
+\par
+The results reported in Table.~\textcolor{red}{\ref{tab1}} indicate that each of the regularization terms used in the proposed group curriculum regularizer can benefit the learning procedure, while simultaneously using both of them obtains more significant performance gain.
+\bibliographystyle{plain}
+\bibliography{1}
+\end{document}
