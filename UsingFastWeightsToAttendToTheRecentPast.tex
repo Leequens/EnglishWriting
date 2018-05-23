@@ -1,0 +1,67 @@
+\documentclass{article}
+\usepackage{ctex}
+\usepackage{xcolor}
+\usepackage[colorlinks,citecolor=green]{hyperref}
+\usepackage{enumerate}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage[top=1in, bottom=1in, left=1.25in, right=1.25in]{geometry}
+\usepackage{lscape}
+\usepackage{cite}
+\usepackage{amsfonts,amssymb,amsmath}
+\author{Zhang, Liqiang}
+\date{May 23, 2018}
+\title{Using Fast Weights to Attend to the Recent Past}
+\begin{document}
+\twocolumn
+\maketitle
+Ordinary recurrent neural networks typically have two types of memory that have very different time scales, very different capacities and very different computational roles\cite{Xu2015Show}. The history of the sequence currently being processed is stored in the hidden activity vector, which acts as a short-term memory that is updated at every time step. The capacity of this memory is $O(H)$ where $H$ is the number of hidden units. Long-term memory about how to convert the current input and hidden vectors into the next hidden vector and a predicted output vector is stored in the weight matrices connecting the hidden units to themselves and to the inputs and outputs\cite{Bi1998Activity}. These matrices are typically updated at the end of a sequence and their capacity is $O(H2 ) + O(IH) + O(HO)$ where $I$ and $O$ are the numbers of input and output units\cite{Willshaw1969Non}.
+\par
+The update rule for the fast memory weight matrix, $A$, is simply to multiply the current fast weights by a decay rate in Eq.~\textcolor{red}{\ref{1}}, $\lambda$, and add the outer product of the hidden state vector, $h(t)$, multiplied by a learning rate,$\eta$:
+\begin{equation} \label{1}
+A(t)=\lambda A(t-1)+\eta h(t)h(t)^T,
+\end{equation}
+\par
+The next vector of hidden activities, $h(t + 1)$, is computed in two steps. The ¡°preliminary¡± vector $h_0(t + 1)$ is determined by the combined effects of the input vector $x(t)$ and the previous hidden vector: $h_0(t+1)=f(Wh(t)+Cx(t))$, where W and C are slow weight matrices and $f(.)$ is the nonlinearity used by the hidden units in Eq.~\textcolor{red}{\ref{2}}. The preliminary vector is then used to initiate an ¡°inner loop¡± iterative process which runs for S steps and progressively changes the hidden state into $h(t+1)=h_S(t+1)$
+\begin{equation} \label{2}
+h_{s+1}(t+1)=f([Wh(t)+Cx(t)+A(t)_s(t+1)),
+\end{equation}
+where the terms in square brackets are the sustained boundary conditions. In a real neural net, A could be implemented by rapidly changing synapses but in a computer simulation that uses sequences which have fewer time steps than the dimensionality of $h$, $A$ will be of less than full rank and it is more efficient to compute the term $A(t)hs(t+1)$ without ever computing the full fast weight matrix, $A$. Assuming $A$ is 0 at the beginning of the sequence,
+\begin{equation} \label{3}
+A(t)=\eta\sum_{\tau=1}^{\tau=t}\lambda^{t-\tau}h(\tau)h(\tau)^T,
+\end{equation}
+\begin{equation} \label{4}
+A(t)h_s(t+1)+\eta\sum_{\tau=1}^{\tau=t}\lambda^{t-\tau}h(\tau)[h(\tau)^Th_s(t+1)],
+\end{equation}
+\par
+In Eq.~\textcolor{red}{\ref{3}} and Eq.~\textcolor{red}{\ref{4}}, the term in square brackets is just the scalar product of an earlier hidden state vector, $h(\tau)$, with the current hidden state vector, $hs(t+1)$, during the iterative inner loop. So at each iteration of the inner loop, the fast weight matrix is exactly equivalent to attending to past hidden vectors in proportion to their scalar product with the current hidden vector, weighted by a decay factor. During the inner loop iterations, attention will become more focussed on past hidden states that manage to attract the current hidden state.
+\newpage
+\begin{table}[htbp]
+\centering
+\begin{tabular}{c|c|c|c}
+\hline
+Model & R=20 & R=50 & R=100 \\
+\hline
+IRNN & 62.11\% & 60.23\% & 0.34\% \\
+LSTM & 60.81\% & 1.85\% & 0\% \\
+A-LSTM & 60.13\% & 1.62\% & 0\% \\
+Fast weights & 1.81\% & 0\% & 0\% \\
+\hline
+\end{tabular}
+\caption{: Classification error rate comparison on the associative retrieval task.}
+\label{tab1}
+\end{table}
+\begin{figure}[H]
+  \centering
+  % Requires \usepackage{graphicx}
+  \includegraphics[height=5cm,width=8cm]{1.png}\\
+  \caption{Comparison of the test log likelihood on the associative retrieval task with 50 recurrent hidden units.}\label{1}
+\end{figure}
+Fig.~\textcolor{red}{\ref{1}} and Tabble.~\textcolor{red}{\ref{tab1}} show that when the number of recurrent units is small, the fast associative memory significantly outperforms the LSTMs with the same number of recurrent units. The result fits with our hypothesis that the fast associative memory allows the RNN to use its recurrent units more effectively. In addition to having higher retrieval accuracy, the model with fast weights also converges faster than the LSTM models.
+\bibliographystyle{plain}
+\bibliography{1}
+\end{document} \begin{table}[htbp]
+
+

@@ -2,6 +2,7 @@
 \usepackage{ctex}
 \usepackage{xcolor}
 \usepackage{enumerate}
+\usepackage[colorlinks,citecolor=green]{hyperref}
 \usepackage{float}
 \usepackage{graphicx}
 \usepackage{multicol}
@@ -11,16 +12,16 @@
 \usepackage{cite}
 \usepackage{amsfonts,amssymb,amsmath}
 \author{Zhang, Liqiang}
-\date{May 19, 2018}
+\date{May 21, 2018}
 \title{Multispectral Imaging Using a Single Bucket Detector}
 \twocolumn
 \begin{document}
 \maketitle
 \par
-Multispectral imaging is a technique capturing spatial-spectral data cubes of scenes, which contain a set of 2D images under different wavelengths. With both spatial and spectral resolving abilities, it is extremely useful and vital for surveying scenes and extracting detailed information\textcolor{blue}{\cite{Garini2006Spectral}}. Now, the multispectral imagers mostly utilize dispersive optical devices or narrow band filters to separate lights of different wavelengths, and then use an array detector to record them separately. Despite diverse principles and setups of the above multispectral
+Multispectral imaging is a technique capturing spatial-spectral data cubes of scenes, which contain a set of 2D images under different wavelengths. With both spatial and spectral resolving abilities, it is extremely useful and vital for surveying scenes and extracting detailed information\cite{Garini2006Spectral}. Now, the multispectral imagers mostly utilize dispersive optical devices or narrow band filters to separate lights of different wavelengths, and then use an array detector to record them separately. Despite diverse principles and setups of the above multispectral
 imaging methods, photons are detected separately either in the spatial or spectral domain using array detectors. Therefore, these multispectral imagers are photon inefficient and spectrum range limited. Besides, they are usually highly expensive.
 \par
-To produce the advantages of SPI in multispectral imaging, there are two intuitional ways. One is to resolve the spectra of collected lights at the detector. Another straightforward way is to directly extend the 2D spatial modulation in conventional SPI to 3D spatial-spectral modulation using two spatial light modulators\textcolor{blue}{\cite{Lee2014Building}}. However, this would largely increase requisite projections and corresponding computation complexity for reconstruction. So the author propose a novel multispectral imaging technique utilizing SPI, termed as multispectral single pixel imaging (MSPI)\textcolor{blue}{\cite{Zhang2015Single}}, without increasing requisite projections and capturing time compared to conventional SPI. The main difference between MSPI and conventional SPI is illustrated in Fig.~\textcolor{red}{\ref{1}}.
+To produce the advantages of SPI in multispectral imaging, there are two intuitional ways. One is to resolve the spectra of collected lights at the detector. Another straightforward way is to directly extend the 2D spatial modulation in conventional SPI to 3D spatial-spectral modulation using two spatial light modulators\cite{Lee2014Building}. However, this would largely increase requisite projections and corresponding computation complexity for reconstruction. So the author propose a novel multispectral imaging technique utilizing SPI, termed as multispectral single pixel imaging (MSPI), without increasing requisite projections and capturing time compared to conventional SPI. The main difference between MSPI and conventional SPI is illustrated in Fig.~\textcolor{red}{\ref{1}}.
 \begin{figure}[H]
   \centering
   % Requires \usepackage{graphicx}
