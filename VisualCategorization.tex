@@ -1,0 +1,55 @@
+\documentclass{article}
+\usepackage{ctex}
+\usepackage{xcolor}
+\usepackage[pagebackref=true,colorlinks,linkcolor=red,citecolor=green]{hyperref}
+\usepackage{enumerate}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage[top=1in, bottom=1in, left=1.25in, right=1.25in]{geometry}
+\usepackage{lscape}
+\usepackage{cite}
+\usepackage{amsfonts,amssymb,amsmath}
+\author{Zhang, Liqiang}
+\date{May 25, 2018}
+\title{Higher-order Integration of Hierarchical Convolutional Activations for Fine-grained Visual Categorization}
+\begin{document}
+\twocolumn
+\maketitle
+Deep convolutional neural networks (CNNs) have emerged as the new state-of-the-art for a wide range of visual recognition tasks. Nevertheless, it remains quite challenging to derive the effective discriminative representation for fine-grained visual categorization (FGVC), primarily due to subtle semantic differences between sub-ordinate categories. Conventional CNNs usually deploy the fully connected layers to learn global semantic representation and may not be suitable to FGVC. Therefore, leveraging local discriminative patterns in CNN is crucial to obtain more powerful representation, and recently has been intensively studied for FGVC.
+\par
+In recent works \cite{He2015Deep,Lecun2014Backpropagation}, the deeper convolutional filters are regarded as weak part detectors and the corresponding activations as the responses of detection, shown in Fig.~\textcolor{red}{\ref{1}}. Motivated by this observation, instead of part annotations and explicit appearance modeling, the author straightforwardly exploit the higher-order statistics from the convolutional activations. They provide a perspective of matching kernel to understand the widely adopted mapping and pooling schemes on convolutional activations in conjunction with linear classifier. Linear mapping and direct pooling only capture the occurrence of parts. In order to capture the higher-order relations among parts, it is better to explore local non-linear matching kernels to characterize the higher-order part interactions.
+\begin{figure}[H]
+  \centering
+  % Requires \usepackage{graphicx}
+  \includegraphics[height=5cm,width=8cm]{1.png}\\
+  \caption{Visualization of several activation maps that corresponds to large responses of the sum-pooled vectors of two activation layers $relu5\_2$ and $relu5\_3$ in VGG-16 model.}\label{1}
+\end{figure}
+\par
+Suppose that an image $I$ is passed by a plain CNN, the author denote the 3D activations $\boldsymbol{\chi}\in R^{K\times M\times N}$ N extracted from some specific convolutional layer as a set of K-dimensional descriptors $\{x_p\}_{p\in\Omega}$, where $K$ is the number of feature channels, $x_p$ represents the descriptor at a particular position $p$ over the set $\Omega$ of valid spatial locations $(\mid\Omega\mid=M\times N)$. The author first consider the matching scheme $\boldsymbol{\kappa}$ for activation sets $\boldsymbol{\chi}$ and $\boldsymbol{\overline{\chi}}$ from two images, in which the set similarity is measured via aggregating all the pairwise similarities among the local descriptors:
+\begin{equation} \label{1}
+\boldsymbol{\kappa(\chi,\overline{\chi})}=Agg(\{k(\boldsymbol{x_p,\bar{x_{\overline p}}})\}_{p\in\Omega,\bar p\in\Omega})=\psi(\boldsymbol{\chi})^T\psi(\bar{\boldsymbol{\chi}}),
+\end{equation}
+where $k(\cdot)$ is some kernel function between individual descriptors of two activation sets, $Agg(\cdot)$ is some set-based aggregation function, $\psi(\boldsymbol{\chi})$ and $\bar{\boldsymbol{\chi}}$ are the vector represetations for sets.
+\par
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+r & 2 & 3 & 4 & 5 & 6 \\
+\hline
+Training & 9.7 & 7.4 & 5.5 & 4.2 & 2.8 \\
+\hline
+Testing & 29.8 & 23.7 & 18.3 & 14.5 & 10.4 \\
+\hline
+\end{tabular}
+\caption{FPS with different non-homogeneous polynomial kernels.}
+\label{tab1}
+\end{table}
+Table.~\textcolor{red}{\ref{1}} lists the frame-per-second (FPS) comparison in both training and testing phases using different polynomial kernels. Since there is high computational overhead involved in the polynomial modules in the network, a large degree r will significantly slow the speed. Therefore, we suggest to adopt 2 as the practical degree in all the experiments in Section 5.3 even though degree-3 kernel can achieve slightly better results on Aircraft and Cars datasets.
+{\small
+       \bibliographystyle{ieeetr}
+       \bibliography{1}
+}
+\end{document} \begin{table}[htbp]
