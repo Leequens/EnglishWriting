@@ -1,0 +1,70 @@
+\documentclass[10pt,twocolumn,letterpaper]{article}
+\usepackage{cvpr}
+\usepackage{enumerate}
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{cite}
+\usepackage{calc}
+\usepackage[pagebackref=true,breaklinks=true,letterpaper=true,colorlinks,bookmarks=false]{hyperref}
+\title{\textbf{Weakly Supervised Deep Detection Networks}}
+\author{Zhang, Liqiang\\\\June 6, 2018}
+\cvprfinalcopy
+\def\cvprPaperID{****}
+\def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
+\begin{document}
+\maketitle
+\par
+\begin{abstract}
+  Weakly supervised learning of object detection is an important problem in image understanding that still does not have a satisfactory solution. In this paper, we address this problem by exploiting the power of deep convolutional neural networks pre-trained on large-scale image-level classification tasks. This paper propose a weakly supervised deep detection architecture that modifies one such network to operate at the level of image regions, performing simultaneously region selection and classification. The model, which is a simple and elegant end-to-end architecture, outperforms standard data augmentation and fine-tuning techniques for the task of image-level classification as well.
+\end{abstract} 
+\section{Introduction}
+In recent years, Convolutional Neural Networks (CNN) have emerged as the new state-of-the-art learning framework for image recognition. Key to their success is the ability to learn from large quantities of labelled data the complex appearance of real-world objects. One of the most striking aspects of CNNs is their ability to learn generic visual features that are generalise to many tasks \cite{Bilen2014Weakly}. In particular, CNNs pre-trained on datasets such as ImageNet ILSVRC have been shown to obtain excellent results in recognition in other domains, in object detection, in semantic segmentation, in human pose estimation,
+and in many other tasks.
+\par
+In this paper, the author contribute a novel end-to-end method for weakly supervised object detection using pre-trained CNNs which they call a weakly supervised deep detection network (WSDDN) in Fig.~\ref{1}. their method starts from an existing network, such as AlexNet pre-trained on ImageNet data, and extends it to reason explicitly and efficiently about image regions $R$ \cite{Bilen2015Weakly}. In order to do so, given an image x, the first step is to efficiently extract region-level descriptors $\phi(x;R)$ by inserting a spatial pyramid pooling layer on top of the convolutional layers of the CNN. The recognition and detection scores computed for all the image regions are finally aggregated in order to predict the class of the image as a whole, which is then used to inject image-level supervision in learning.
+\begin{figure}
+\begin{center}
+  % Requires \usepackage{graphicx}
+  \includegraphics[height=4.5cm,width=8cm]{1.png}\\
+  \caption{The method starts from a CNN pre-trained for image classification on a large dataset, e.g. ImageNet. It then modifies to reason efficiently about regions, branching off a recognition and a detection data streams. The resulting architecture can be fine-tuned on a target dataset to achieve state-of-the-art weakly supervised object detection using only image-level annotations.}\label{1}
+\end{center}
+\end{figure}
+\section{Method}
+The first data stream performs classification of the individual regions, by mapping each of them to a $C$-dimensional vector of class scores, assuming that the system is trained to detect $C$ different classes. This is achieved by evaluating a linear map $\phi_{fc8c}$ and results in a matrix of data $x_c\in\mathbb{R}^{C\times |R|}$, containing the class prediction scores for each region. The latter is then passed through a softmax operator, defined as follows:
+\begin{equation}
+[\sigma_{\rm{class}}(x^c)]_{ij}=\frac{e^{x^c_{ij}}}{\sum_{k=1}^Ce^{x^c_{ij}}}.
+\end{equation}
+The second data stream performs instead detection, by scoring regions relative to one another. This is done on a class-specific basis by using a second linear map $\phi_{fc8d}$, also resulting in a matrix of scores $x^d\in\mathbb{R}^{C\times |R|}$. It is then passed through another softmax operator, but this time defined as follows:
+\begin{equation}
+[\sigma_{\rm{det}}(x^d)]_{ij}=\frac{e^{x^d_{ij}}}{\sum_{k=1}^{|R|}e^{x^d_{ik}}}.
+\end{equation}
+While the two streams are remarkably similar, the introduction of the $\sigma_{\rm{class}}$ and $\sigma_{\rm{det}}$ non-linearities in the classification and detection streams is a key difference which allows to interpret them as performing classification and detection, respectively \cite{Cinbis2017Weakly}. In the first case, in fact, the softmax operator compares, for each region independently, class scores, whereas in the second case the softmax operator compares, for each class independently, the scores of different regions. Hence, the first branch predicts which class to associate to a region, whereas the second branch selects which regions are more likely to contain an informative image fragment.
+\section{Experiments}
+\begin{table}[htbp]
+\small
+\begin{tabular}{|c|cccc|}
+\hline
+  & \textbf{S} & \textbf{M} & \textbf{L} & \textbf{Ens.} \\
+\hline
+\hline
+SSW & 31.1 & 30.9 & 24.3 3& 3.3 \\
+EB & 31.5 & 30.9 & 25.5 & 34.2 \\
+EB + Box Sc. & 33.4 & 32.7 & 30.4 & 36.7 \\
+EB + Box Sc. + Sp. Reg. & \textbf{34.5} & \textbf{34.9} & \textbf{34.8} & \textbf{39.3} \\
+\hline
+\end{tabular} \\
+\caption{\textbf{VOC 2007} test detection average precision (\%). The ensemble network is denoted as \textbf{Ens.}}
+\label{tab1}
+\end{table}
+Table~\ref{tab1} shows that WSDDN with individual models \textbf{S} and \textbf{M} are already on par with the state-ofthe-art method and the ensemble outperforms the best previous score in the VOC 2007 dataset. Differently from supervised detection methods, detection performance of WSDDN does not improve with use of wider or deeper networks. In contrast, model \textbf{L} performs significantly worse than models \textbf{S} and \textbf{M} \cite{Hariharan2014Simultaneous}.
+{\small
+\bibliographystyle{ieee}
+\bibliography{1}
+}
+\end{document} 
