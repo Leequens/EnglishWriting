@@ -1,0 +1,86 @@
+\documentclass[10pt,twocolumn,letterpaper]{article}
+\usepackage{cvpr}
+\usepackage{enumerate}
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{cite}
+\usepackage{calc}
+\usepackage[pagebackref=true,breaklinks=true,letterpaper=true,colorlinks,bookmarks=false]{hyperref}
+\title{\textbf{Natural Language Object Retrieval}}
+\author{Zhang, Liqiang\\\\June 14, 2018}
+\cvprfinalcopy
+\def\cvprPaperID{****}
+\def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
+\begin{document}
+\maketitle
+\par
+\begin{abstract}
+  In this paper, the author address the task of natural language object retrieval, to localize a target object within a given image based on a natural language query of the object. Natural language object retrieval differs from text-based image retrieval task as it involves spatial information about objects within the scene and global scene context. To address this issue, the auhtor propose a novel Spatial Context Recurrent ConvNet (SCRC) model as scoring function on candidate boxes for object retrieval, integrating spatial configurations and global scene-level contextual information into the network. The model processes query text, local image descriptors, spatial configurations and global context features through a recurrent network, outputs the probability of the query text conditioned on each candidate box as a score for the box, and can transfer visual-linguistic knowledge from image captioning domain to our task.
+\end{abstract}
+\section{Introduction}
+Significant progress has been made in object detection in recent years; with the help of Convolutional Neural Networks (CNNs), it is possible to detect a predefined set of object categories with high accuracy, and the number of categories in object detection has grown over 10K to 100K with the help of domain adaptation and hashing\cite{Karpathy2014Deep}. However, in practical application scenarios, instead of using a predefined fixed set of object categories, one would often prefer to refer to an object with natural language rather than use a predefined category label. Such natural language query can include different types of phrases such as categories, attributes, spatial configurations and interactions with other objects, such as ¡°the young lady in a white dress sitting on the left¡± or ¡°white car on the right¡± in Fig.~\ref{1}.
+\begin{figure}
+\begin{center}
+  % Requires \usepackage{graphicx}
+  \includegraphics[height=10cm,width=8cm]{1.png}\\
+  \caption{Overview of our method. Given an input image, a text query and a set of candidate locations (e.g. from object proposal methods), a recurrent neural network model is used to score candidate locations based on local descriptors, spatial configurations and global context. The highest scoring candidate is retrieved. }\label{1}
+\end{center}
+\end{figure}
+In this paper, the author address the problem of natural language object retrieval: given an image and a natural language description of an object as query, they want to retrieve the object by localizing the object in the image\cite{Bansal2014What}. Natural language object retrieval can be seen as a generalization of generic object detection and has a wide range of applications, such as handling natural language commands in robotics where the user may ask to a robot to pick up ``the TV remote control on the shelf''.
+\section{The model}
+Inspired by the architecture of LRCN , the Spatial Context Recurrent ConvNet (SCRC) model for natural language object retrieval consists of several components as illustrated in Fig.~\ref{2}.
+\begin{figure*}
+\begin{center}
+  % Requires \usepackage{graphicx}
+  \includegraphics[height=7cm,width=18cm]{2.png}\\
+  \caption{The Spatial Context Recurrent ConvNet (SCRC) for natural language object retrieval. The recurrent network in the author's model contains three LSTM units\cite{Girshick2015Fast}. Two CNN¡¯s are used to extract local image descriptors and global scene-level contextual feature respectively. Parameters in word embedding, word prediction and three LSTM units are initialized by pretraining on image captioning dataset.}\label{2}
+\end{center}
+\end{figure*}
+\par
+At test time, given an input image $I$, a query text $S$ and a set of candidate bounding boxes $\{b_i\}$, the query text $S$ is scored on $i$-th candidate box using the likelihood of $S$ conditioned on the local image region, the whole image and the spatial configuration of the box, computed as
+\begin{equation}
+\begin{aligned}
+s &= p(S|I_{box},I_{im},x_{spatial} \\
+&=\prod_{w_t\in S}p(w_t|w_{t-1},\cdot\cdot\cdot,w_1,I_{box},I_{im},x_{spatial}).
+\end{aligned}
+\end{equation}
+and the highest scoring candidate boxes are retrieved.
+\begin{equation}
+\begin{aligned}
+p(w_{t+1}|w_t,\cdot\cdot\cdot,w_1,I_{box},I_{im},x_{spatial}) \\
+= {\rm Softmax}(W_{local}h_{local}^{(t)}+W_{global}h_{global}^{(t)}+r)
+\end{aligned}
+\end{equation}
+where $W_{local}$ and $W_{global}$ are weight matrices for word prediction and $r$ is a bias vector. Softmax($\cdot$) is a softmax function over a vector to output a probability distribution.
+\section{Experiments}
+\begin{table}[H]
+\small
+\renewcommand\arraystretch{1.2}
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Method} & P@1-NR & P@1 \\
+\hline
+CAFFE-7K & 32.53\% & 27.73\% \\
+LRCN [4]  & - & 38.38\% \\
+SCRC(w/o context, spatial, transfer) & - & 61.03\% \\
+SCRC(w/o context, spatial) & - & 64.09\% \\
+SCRC(w/o context) & - & 70.15\% \\
+SCRC & - & \textbf{72.74\%} \\
+\hline
+\end{tabular} \\
+\caption{Top-1 precision of our method compared with baselines on annotated bounding boxes in ReferIt dataset.} \label{tab1}
+\end{table}
+\par
+In Table~\ref{tab1}, it can be seen that pretraining on image captioning, adding spatial configuration, and adding scene-level context all improve the performance, with adding spatial configuration $x_{spatial}$ leading to the most significant performance boost.
+{\small
+\bibliographystyle{ieee}
+\bibliography{1}
+}
+
+\end{document}
