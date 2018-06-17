@@ -13,7 +13,7 @@
 \usepackage{calc}
 \usepackage[pagebackref=true,breaklinks=true,letterpaper=true,colorlinks,bookmarks=false]{hyperref}
 \title{\textbf{Multiscale Combinatorial Grouping}}
-\author{Zhang, Liqiang\\\\June 18, 2018}
+\author{Zhang, Liqiang\\\\June 16, 2018}
 \cvprfinalcopy
 \def\cvprPaperID{****}
 \def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
@@ -28,7 +28,7 @@ Two paradigms have shaped the field of object recognition in the last decade. Th
 \par
 The second paradigm relies on perceptual grouping to provide a limited number of high-quality and categoryindependent object candidates, which can then be described with richer representations and used as input to more sophisticated learning methods.
 \par
-In this paper, the author propose a unified approach to multiscale hierarchical segmentation and object candidate generation called Multiscale Combinatorial Grouping (MCG). Fig.~\ref{1} shows an example of the results. Their main contributions are:
+In this paper, the author propose a unified approach to multiscale hierarchical segmentation and object candidate generation called Multiscale Combinatorial Grouping (MCG)\cite{Hoiem2011Recovering}. Fig.~\ref{1} shows an example of the results. Their main contributions are:
 \begin{figure}
 \begin{center}
   % Requires \usepackage{graphicx}
@@ -42,7 +42,7 @@ In this paper, the author propose a unified approach to multiscale hierarchical 
 \item A grouping algorithm that produces accurate object candidates by efficiently exploring the combinatorial space of their multiscale regions.
 \end{itemize}
 \section{The Segmentation Algorithm}
-Spatially transforming an UCM is nontrivial because its boundaries are one-dimensional entities whose topology and strength determine the underlying hierarchy, and an error at a single pixel can have drastic effects. The author therefore opt for sampling uniformly $K$ levels in the hierarchy, transforming them sequentially, and reconstructing from their boundaries a transformed UCM.
+Spatially transforming an UCM is nontrivial because its boundaries are one-dimensional entities whose topology and strength determine the underlying hierarchy\cite{David2013SCALPEL}, and an error at a single pixel can have drastic effects. The author therefore opt for sampling uniformly $K$ levels in the hierarchy, transforming them sequentially, and reconstructing from their boundaries a transformed UCM.
 \par
 They consider two different segmentations $\mathcal{R}=\{R_i\}_i$ and $\mathcal{S}=\{S_j\}_j$. They define the projection of the segmentation $\mathcal{R}$ onto a region $S_j\in\mathcal{S}$ as the majority label
 \begin{equation}
