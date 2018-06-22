@@ -1,0 +1,62 @@
+\documentclass[10pt,twocolumn,letterpaper]{article}
+\usepackage{cvpr}
+\usepackage{enumerate}
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{cite}
+\usepackage{calc}
+\usepackage[pagebackref=true,breaklinks=true,letterpaper=true,colorlinks,bookmarks=false]{hyperref}
+\title{\textbf{Spectral Segmentation with Multiscale Graph Decomposition}}
+\author{Zhang, Liqiang\\\\June 22, 2018}
+\cvprfinalcopy
+\def\cvprPaperID{****}
+\def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
+\begin{document}
+\maketitle
+\par
+\begin{abstract}
+  In this paper, the author present a multiscale spectral image segmentation algorithm. In contrast to most multiscale image processing, this algorithm works on multiple scales of the image in parallel, without iteration, to capture both coarse and fine level details. The algorithm is computationally efficient, allowing to segment large images. This team use the Normalized Cut graph partitioning framework of image segmentation. They construct a graph encoding pairwise pixel affinity, and partition the graph for image segmentation. They demonstrate that large image graphs can be compressed into multiple scales capturing image structure at increasingly large neighborhood. Images that previously could not be processed because of their size have been accurately segmented thanks to this method.
+\end{abstract}
+\section{Introduction}
+From this paper, I know that there are two things could be done to make image segmentation difficult: 1) camouflage the object by making its boundary edges faint, and 2) increase clutter by making background edges highly contrasting, particularly those in textured regions. In fact, such situations arise often in natural images, as animals have often evolved to blend into their environment.
+\par
+Several recent works have demonstrated that multiscale image segmentation can produce impressive segmentation results under these difficult conditions.  Sharon \emph{et al.}\cite{Sharon2000Fast} uses an algebraic multi-grid method for solving the normalized cut criterion efficiently, and uses recursive graph coarsening to produce irregular pyramid encoding region based grouping cues. Yu\cite{Yu2004Segmentation} constructs a multiple level graph encoding edge cues at different image scales, and optimizes the average Ncut cost across all graph levels.
+\par
+The author focus on the third issue of multiscale propagation of grouping cues in isolation and show that simple geometric
+coarsening of the image region/segmentation graph can work for multiscale segmentation\cite{Yu2001Grouping}. The key principle is that segmentation across different spatial scales should be processed in parallel. The advantage of graphs with long connections comes with a great computational cost. If implemented naively, segmentation on a fully connected graph $G$ of size $N$ would
+require at least $O(N^2)$ This paper develops an efficient computation method of multiscale image segmentation in a constrained Normalized cuts framework\cite{Girshick2016Region}.
+\begin{figure}
+\begin{center}
+  % Requires \usepackage{graphicx}
+  \includegraphics[height=3cm,width=8.5cm]{1.png}\\
+  \caption{Column 1 and 2: image and image edges. Column 3 and 4: segmentation graph encoding intervening contour grouping cue. Two pixels have high affinity if the straight line connecting them does not cross an image edge. }\label{1}
+\end{center}
+\end{figure}
+\section{Graph based image segmentation}
+The overall quality of segmentation depends on the pairwise pixel affinity graph. Two simple but effective local grouping cues are: intensity and contours. Intensity Close-by pixels with similar intensity value are likely to belong to one object as Eq.~\ref{11}:
+\begin{equation}\label{11}
+W_I(i,j)=e^{-\mid\mid X_i-X_j\mid\mid^2/\sigma_x-\mid\mid I_i-I_j\mid\mid^2/\sigma_I}
+\end{equation}
+where $X_i$ and $I_i$ denote pixel location and intensity. Connecting pixels by intensity is useful to link disjoint object parts. But because of texture clutter, the intensity cue alone often gives poor segmentations. Intervening Contours Image edges signal a potential object boundary. It is particularly useful when background clutter has similar intensity value with object body. The team evaluate the affinity between two pixels by measuring the magnitude of image edges between them as Eq.~\ref{12}:
+\begin{equation}\label{12}
+W_C(i,j)=e^{-max_{x\in line(i,j)}\mid\mid Edge(x)||^2/\sigma_c}
+\end{equation}
+where $line(i,j)$ is a straight line joining pixels $i$ and $j$, and $Edge(x)$ is the edge strength at location $x$. Fig.~\ref{1}  shows graph weights $W(i,:)$ for a fixed pixel $i$. At coarse image scales, texture edges tend to be blurred out and suppressed, while at fine image scales faint elongated edges are more likely to be detected, together with texture edges.
+\section{Multiscale Graph Segmentation}
+Let $X_s\in\{0,1\}^{N_s\times K}$ be the partitioning matrix at scale $s$, $X_s(i,k)=1$ iff graph node $i\in I_s$ belongs to partition $k$. We form the multiscale partitioning matrix \textbf{X} and the bloc diagonal \textbf{multiscale affinity matrix W}  as Eq.~\ref{13}:
+\begin{equation}\label{13}
+X=\left(\begin{array}{c} X_1\\ \vdots \\ X_S \end{array} \right),~W=\left(\begin{array}{ccc} W_1^c & & 0\\  & \ddots &  \\ 0 & & W_S^c \end{array} \right)
+\end{equation}
+\par
+Direct partitioning of graph $W$ gives the trivial segmentation, grouping all the nodes in a given scale as one segment. 
+{\small
+\bibliographystyle{ieee}
+\bibliography{1}
+}
+\end{document}
