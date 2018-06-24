@@ -1,0 +1,113 @@
+\documentclass[10pt,twocolumn,letterpaper]{article}
+\usepackage{cvpr}
+\usepackage{enumerate}
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{cite}
+\usepackage{calc}
+\usepackage[pagebackref=true,breaklinks=true,letterpaper=true,colorlinks,bookmarks=false]{hyperref}
+\title{\textbf{Image Segmentation by Cascaded Region Agglomeration}}
+\author{Zhang, Liqiang\\\\June 24, 2018}
+\cvprfinalcopy
+\def\cvprPaperID{****}
+\def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
+\begin{document}
+\maketitle
+\par
+\begin{abstract}
+  In this paper, the author propose a hierarchical segmentation algorithm that starts with a very fine oversegmentation and gradually merges regions using a cascade of boundary classifiers. This approach allows the weights of region and boundary features to adapt to the segmentation scale at which they are applied. The stages of the cascade are trained sequentially, with asymetric loss to maximize boundary recall. On six segmentation data sets, our algorithm achieves best performance under most region-quality measures, and does it with fewer segments than the prior work. 
+\end{abstract} 
+\section{Introduction}
+A standard preprocessing step in many recognition tasks today is to partition the input image into a set of superpixels: ``perceptually meaningful atomic regions". In a typical vision system these number in the hundreds. Sometimes a coarser partition is used, with only tens (or perhaps just a handful) of regions; in this regime the regions are no longer atomic, but the hope is that they remain ¡°perceptually meaningful¡±, that is, that each region does not straddle boundaries between semantically distinct regions, such as boundaries of an object, or occluding boundaries. Thus, such image partition is often called oversegmentation.
+\par
+Regions extracted by oversegmentation usually form a representation of an image that is much more compact than the original pixel grid. As long as the oversegmentation indeed does not undersegment any region, this speeds up reasoning, with little loss of accuracy for the downstream task, such as category-level segmentation or depth estimation. A user of oversegmentation algorithm has two conflicting objectives: On the one hand, make the superpixels as large as possible, hence reducing their number; on the other hand, preserve true boundaries in the image, hence driving the number of superpixels up and their size down. All the state-of-the-art superpixel methods provide a tuning parameter that controls this tradeoff, and the range that seems to work for a variety of applications is 400 to 1000 superpixels.
+\begin{figure}
+\begin{center}
+  % Requires \usepackage{graphicx}
+  \includegraphics[height=7cm,width=8.5cm]{1.png}\\
+  \caption{Example segmentations by OWT-UCM (left), Hoiem \emph{et al.}\cite{Hoiem2005Geometric} (middle) and ISCRA (right). For each image, segmentation shown is at the scale optimal for the image (OIS) with each algorithm, the best that algorithm can do for the image.}\label{1}
+\end{center}
+\end{figure}
+\par
+This team show that across six data sets, performance measures and for a broad range segmentation scale from fine to coarse, the performance of ISCRA is superior to that of current state-of-the-art methods. It is by far the most comprehensive evaluation of the leading approaches to superpixel extraction, and in general to image segmentation. Some typical examples for ISCRA compared to leading other methods are shown in Fig.~\ref{1}.
+\section{Problem setup}
+The atuhor model $Pg$ with linear logistic regression as Eq.~\ref{11}:
+\begin{equation}\label{11}
+Pg(p,q;I,\mathcal{R})=1/(1+{\rm exp\{-w^T\phi_{pq}(I,\mathcal{R})\}}).
+\end{equation}
+The model is usually trained by minimization of log-loss, averaged over examples (which here means averaged over region pairs in the training set). However, naive use of logloss fails here, because of the symmetry with which it penalizes two types of mistakes: over- and underestimating $Pg$. Given a typical image with 1000 superpixels in $\mathcal{R}$, only a
+small fraction of pairs in $N(R)$ will be true negatives, since most neighboring superpixels should be grouped together. A similar problem was identified in \cite{Sharon2000Fast}, leading to a modification of Hamming loss. They scale the loss value for every pair of regions by the length $L_i$, in pixels, of the boundary between the regions. This scaling reflects the higher loss from ``erasing" a long true boundary than a short one:
+\begin{equation}\label{12}
+\begin{split}
+{\rm w}*(a)={\rm \mathop{argmin}\limits_{w}}&\frac{1}{n}\sum_{i=1}^nL_i[y_ilogPg(\phi_i;{\rm w}) \\
+&+a(1-y_i)log(1-Pg(\phi_i;{\rm w}))].
+\end{split}
+\end{equation}
+The scaled loss in Eq.~\ref{12} is convex and optimizable in the same way as the ``normal" logistic regression.
+\section{Results on benchmarks}
+\begin{table}[H]
+\small
+\centering
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\multirow{2}*{Method} & \multicolumn{2}{c|}{Covering} & \multicolumn{2}{c|}{VOI} & \multicolumn{2}{c|}{PRO} \\
+\cline{2-7}
+~ & OIS & ODS & OIS & ODS & OIS & ODS \\
+\hline
+UCM\cite{Arbel2011Contour} & 0.65 & $0.59^{23}$ & 1.54 & $1.66^{10}$ & 0.85 & $\textbf{0.81}^{50}$ \\
+\hline
+Hoiem\cite{Hoiem2011Recovering} & 0.59 & $0.55^{17}$ & 1.70 & $1.83^{10}$ & 0.82 & $0.79^{17}$ \\
+\hline
+ISCRA & $\textbf{0.66}$ & $\textbf{0.60}^{12}$ & $\textbf{1.40}$ & $\textbf{1.61}^{8}$ & $\textbf{0.86}$ & $\textbf{0.81}^{16}$ \\
+\hline
+\end{tabular}\caption{Results for large segment regime, \textbf{BSDS300}.}
+\label{tab1}
+\end{table}
+\begin{table}[H]
+\small
+\centering
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\multirow{2}*{Method} & \multicolumn{2}{c|}{Covering} & \multicolumn{2}{c|}{VOI} & \multicolumn{2}{c|}{PRO} \\
+\cline{2-7}
+~ & OIS & ODS & OIS & ODS & OIS & ODS \\
+\hline
+UCM\cite{Arbel2011Contour} & 0.64 & $\textbf{0.59}^{18}$ & 1.49 & $1.69^{13}$ & \textbf{0.85} & $\textbf{0.83}^{59}$ \\
+\hline
+Hoiem\cite{Hoiem2011Recovering} & 0.60 & $0.56^{18}$ & 1.66 & $1.78^{11}$ & 0.84 & $0.8^{18}$ \\
+\hline
+ISCRA & $\textbf{0.66}$ & $\textbf{0.59}^{24}$ & $\textbf{1.42}$ & $\textbf{1.60}^{10}$ & $\textbf{0.85}$ & $0.82^{24}$ \\
+\hline
+\end{tabular}\caption{Large segment regime, \textbf{BSDS500}.}
+\label{tab2}
+\end{table}
+\begin{table}[H]
+\small
+\centering
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\multirow{2}*{Method} & \multicolumn{2}{c|}{Covering} & \multicolumn{2}{c|}{VOI} & \multicolumn{2}{c|}{PRO} \\
+\cline{2-7}
+~ & OIS & ODS & OIS & ODS & OIS & ODS \\
+\hline
+UCM\cite{Arbel2011Contour} & 0.74 & $0.64^{6}$ & 1.05 & $1.30^{3}$ & \textbf{0.85} & $0.78^{12}$ \\
+\hline
+Hoiem\cite{Hoiem2011Recovering} & 0.67 & $0.65^{7}$ & 1.34 & $1.37^{7}$ & 0.80 & $0.77^{8}$ \\
+\hline
+ISCRA & $\textbf{0.75}$ & $\textbf{0.67}^{4}$ & $\textbf{1.02}$ & $\textbf{1.18}^{3}$ & $\textbf{0.85}$ & $0.77^{14}$ \\
+\hline
+\end{tabular}\caption{Large segment regime, \textbf{MSRC}.}
+\label{tab3}
+\end{table}
+Results for region measures relevant for the large segment regime are summarized in Tables~\ref{tab1} through~\ref{tab3}.
+{\small
+\bibliographystyle{ieee}
+\bibliography{1}
+}
+\end{document} 
