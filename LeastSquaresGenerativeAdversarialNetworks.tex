@@ -1,0 +1,80 @@
+\documentclass[10pt,twocolumn,letterpaper]{article}
+\usepackage{cvpr}
+\usepackage{enumerate}
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{cite}
+\usepackage{calc}
+\usepackage[pagebackref=true,breaklinks=true,letterpaper=true,colorlinks,bookmarks=false]{hyperref}
+\title{\textbf{Least Squares Generative Adversarial Networks}}
+\author{Zhang, Liqiang\\\\June 26, 2018}
+\cvprfinalcopy
+\def\cvprPaperID{****}
+\def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
+\begin{document}
+\maketitle
+\par
+\begin{abstract}
+  Unsupervised learning with generative adversarial networks (GANs) has proven hugely successful. Regular GANs hypothesize the discriminator as a classifier with the sigmoid cross entropy loss function. In this paper, the author found a problem that this loss function may lead to the vanishing gradients problem during the learning process. In order to solute this problem, they propose the Least Squares Generative Adversarial Networks (LSGANs) which adopt the least squares loss function for the discriminator. The author show that minimizing the objective function of LSGAN yields minimizing the Pearson $\chi^2$ divergence. Be relative to regular GANs, LSGANs have two benefits. First, it can generate higher quality images than regular GANs. Second, LSGANs perform more stable during the learning process.
+\end{abstract}
+\section{Introduction}
+Deep learning has launched a profound reformation and even been applied to many real-world tasks, such as image classification\cite{He2016Deep}, object detection\cite{Ren2015Faster} and segmentation\cite{Shelhamer2017Fully}. These tasks obviously fall into the scope of supervised learning, which means that a lot of labeled data are provided for the learning processes. Compared with supervised learning, however, unsupervised learning tasks, such as generative models, obtain limited impact from deep learning.
+\par
+Recently, Generative adversarial networks (GANs)\cite{Goodfellow2014Generative} have demonstrated impressive performance for unsupervised learning tasks. Unlike other deep generative models which usually adopt approximation methods for intractable functions or inference, GANs do not require any approximation and can be trained end-to-end through the differentiable networks. The basic idea of GANs is to simultaneously train a discriminator and a generator: the discriminator aims to distinguish between real samples and generated samples; while the generator tries to generate fake samples as real as possible, making the discriminator believe that the fake samples are from real data.
+\par
+In spite of the great progress for GANs in image generation, the quality of generated images by GANs is still limited for some realistic tasks. Regular GANs adopt the sigmoid cross entropy loss function for the discriminator. The author argue that this loss function, however, will lead to the problem of vanishing gradients when updating the generator using the fake samples that are on the correct side of the decision boundary, but are still far from the real data. As Fig.~\ref{1} shows, when using the fake samples to update the generator by making the discriminator believe they are from real data, it will cause almost no error because they are on the correct side, in other word, the real data side, of the decision boundary.
+\section{Method}
+The learning process of the GANs is to train a discriminator $D$ and a generator $G$ simultaneously. The target of $G$ is to learn the distribution $p_g$ over data $x$. $G$ starts from sampling input variables $z$ from a uniform or Gaussian distribution $p_z(z)$, then maps the input variables $z$ to data space $G(z;\theta_g)$ through a differentiable network. On the other hand, $D$ is a classifier $D(x;\theta_d)$ that aims to recognize whether an image is from training data or from $G$ The minimax objective for GANs can be formulated as Eq.~\ref{11}:
+\begin{equation}\label{11}
+\begin{split}
+\mathop{{\rm min}}\limits_{G}\mathop{{\rm max}}\limits_{D}V_{{\rm GAN}}&(D,G)=\mathbb{E}_{x\sim p_{data}(x)}[logD(x)] \\
+&+\mathbb{E}_{z\sim p_z(z)}[log(1-D(G(z)))].
+\end{split}
+\end{equation}
+\par
+Viewing the discriminator as a classifier, regular GANs adopt the sigmoid cross entropy loss function. This loss function
+will cause the problem of vanishing gradients for the samples that are on the correct side of the decision boundary, but are still far from the real data. To remedy this problem, the author propose the Least Squares Generative Adversarial Networks
+(LSGANs). Suppose them use the $a-b$ coding scheme for the discriminator, where $a$ and $b$ are the labels for fake data and real data, respectively. Then the objective functions for LSGANs can be defined as Eq.~\ref{12}:
+\begin{figure*}
+\begin{center}
+  % Requires \usepackage{graphicx}
+  \includegraphics[height=5cm,width=18cm]{4.png}\\
+  \caption{Illustration of different behaviors of two loss functions. (a): Decision boundaries of two loss functions. Note that the decision boundary should go across the real data distribution for a successful GANs learning. Otherwise, the learning process is saturated. (b): Decision boundary of the sigmoid cross entropy loss function. The orange area is the side of real samples and the blue area is the side of fake samples. It gets very small errors for the fake samples (in magenta) when updating G as they are on the correct side of the decision boundary. (c): Decision boundary of the least squares loss function. It penalizes the fake samples (in magenta), and as a result, it forces the generator to generate samples toward decision boundary.}\label{1}
+\end{center}
+\end{figure*}
+\begin{equation}\label{12}
+\begin{split}
+\mathop{{\rm min}}\limits_{D}V_{LSGAN}(D)=\frac{1}{2}\mathbb{E}_{x\sim p_{data}(x)}[(D(x)-b)^2] \\
++\frac{1}{2}\mathbb{E}_{z\sim p_z(z)}[(D(G(z))-a)^2] \\
+\mathop{{\rm min}}\limits_{G}V_{LSGAN}(D)=\frac{1}{2}\mathbb{E}_{z\sim p_z(z)}[(D(G(z))-c)^2] \\
+\end{split}
+\end{equation}
+where $c$ denotes the value that $G$ wants $D$ to believe for fake data.
+\section{Quantitative Evaluation}
+This team trains LSGANs and DCGANs with the same network architecture on CIFAR-10 and use the models to randomly generate 50, 000 images for calculating the inception scores. The evaluated inception scores of LSGANs and DCGANs are shown in Table~\ref{tab1}.
+\begin{table}[htbp]
+\small
+\renewcommand\arraystretch{1.2}
+\centering
+\begin{tabular}{|c|c|}
+\hline
+Method & Inception Score \\
+\hline
+DCGAN & 6.16 \\
+DCGAN & 6.22 \\
+\textbf{LSGAN}  & \textbf{6.47} \\
+\hline
+\end{tabular} \\
+\caption{Inception scores on CIFAR-10.} \label{tab1}
+\end{table}
+{\small
+\bibliographystyle{ieee}
+\bibliography{1}
+}
+\end{document}
