@@ -1,0 +1,163 @@
+\documentclass[a4paper]{article}
+\usepackage{subfig}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{fullpage}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{amssymb}
+\usepackage{outline} 
+\usepackage{pmgraph} 
+\usepackage[normalem]{ulem}
+\usepackage{graphicx} 
+\usepackage{verbatim}
+\usepackage[pagebackref=true,breaklinks=true,letterpaper=true,colorlinks,bookmarks=false]{hyperref}
+% \usepackage{minted} % need `-shell-escape' argument for local compile
+\title{
+    \vspace*{1in}
+    \includegraphics[width=2.75in]{zhenglab-logo} \\
+    \vspace*{1.2in}
+    \textbf{\huge Weekly Work Report}
+    \vspace{0.2in}
+}
+
+\author{Zhang, Liqiang \\
+    \vspace*{0.5in} \\
+    \textbf{VISION@OUC} \\
+    \vspace*{1in}
+}
+
+\date{\today}
+
+
+\begin{document}
+
+\maketitle
+\setcounter{page}{0}
+\thispagestyle{empty}
+\newpage
+\section{An introduction to deep learning}
+\par
+Now, I begin to learn the knowledge about deep learning. The first part of the course is called neural network and deep learning. In this part, there are four weeks of lessons. The first week is an introduction to deep learning. 
+\subsection{What is neural network?}
+By watching these classes, I get that deep learning refers to training neural networks, which consists of input, output and neuron. Professor Wu gives an example (Fig.~\ref{1}) which could make me have a better understanding about neural networks.
+\begin{figure}[!htb]
+    \centering
+    \subfloat[]{\label{a}%%
+    \includegraphics[width=2in]{1.png}}
+    \quad
+    \subfloat[]{\label{b}%%
+    \includegraphics[width=1.5in]{3.png}}
+    \subfloat[]{\label{c}%%
+    \includegraphics[width=2in]{2.png}}\\
+    \caption{An example of the neural network on house prices}
+    \label{1}
+\end{figure}
+\par
+Fig.~\ref{1}\subref{a} at\cite{note} is a function about size of house and price, which likes ReLu function standing for rectified linear unit. We can fit the housing prices as a very simple neural network as Fig.~\ref{1}\subref{b}. It's almost as simple as possible neural network. A larger neural network contain many of the single neurons and stacking them together. We can think this simple neuron network as a single Lego brick and we can get a bigger neural network by stacking together many of these Lego bricks. Obviously, Fig.~\ref{1}\subref{c} is a larger neural network, which contain four inputs, size, bedrooms, zip code and wealth. These features are called the input layer. There are many hidden unit which could compute data and transmit the result to output layer between input and output. 
+\par
+\subsection{Supervised Learning with neural networks}
+\begin{table}[h]
+\small
+\renewcommand\arraystretch{1.2}
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+Input (x) & Output (y) & Application \\
+\hline
+Home features & Price & Real estate \\
+
+Ad, userinfo & Click on ad? (0/1) & Online Advertising \\
+
+Image & Object (1,\dots ,1000) & Photo tagging \\
+
+Audio & Text transcipt & Speech recognition \\
+
+English & Chinese & Machine translation \\
+
+Image, Radar info & Position of other cars & Autonomous driving \\
+\hline
+\end{tabular} 
+\caption{Some examples on supervised learning application.} 
+\label{tab1}
+\end{table}
+In the last few years, computer vision has a great progress as a result of deep learning. So far, deep learning has created a lot of economic value. But it turns out that almost all the economic value created by neural networks has been through one type of machine learning, called supervised learning. In supervised learning, there are somt input x and output y. For example, supervised learning can be used in many industries as Table~\ref{tab1}.
+\par
+Deep learning has brought vital help to image recognition, speech recognition, paragraph translation and automatic driving technology. In the real estate application that we can use a universally standard neural network architecture as Fig.~\ref{1}\subref{c}; in image applications people often use convolution on neural networks, often abbreviated CNN as Fig.~\ref{2}\subref{a} in\cite{note}; in sequence data such as audio we can use RNN, a recurrent neural network as Fig.~\ref{2}\subref{b}.
+\begin{figure}[!htb]
+    \centering
+    \subfloat[]{\label{a}%%
+    \includegraphics[width=1.5in]{2a.png}}
+    \quad
+    \subfloat[]{\label{b}%%
+    \includegraphics[width=1.5in]{2b.png}}\\
+    \caption{Convolutional NN and Recurrent NN}
+    \label{2}
+\end{figure}
+\par
+Machine learning can be applied to both structured data and unstructured data. Structured data is a database, for example, in housing price prediction, we might have a database or the column that tells the neural network the size and the number of bedrooms as Table~\ref{tab2}\cite{note}. 
+\begin{table}
+\small
+\renewcommand\arraystretch{1.2}
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+Size & \#bedrooms & \dots & Price (1000\$s) \\
+\hline
+2104 & 3 &  & 400 \\
+
+1600 & 3 &  & 330 \\
+
+2400 & 3 &  & 369 \\ 
+
+\vdots & \vdots &  & \vdots \\
+
+3000 & 4 &  & 540 \\
+\hline
+\end{tabular} 
+\caption{Structured data.} 
+\label{tab2}
+\end{table} 
+\par
+Relatively speaking, unstructured data refers to things like audio, raw audio, or images (Fig.~\ref{3}). Computers learn for unstructured data is much more difficult than structured data. After the emergence of neural network, computers are  much better at interpreting unstructured data as well compared to just a few years ago.
+\par
+\begin{figure}[!htb]
+    \centering
+    \subfloat[]{\label{a}%%
+    \includegraphics[width=4in]{data1.png}}
+    \quad
+    \subfloat[]{\label{b}%%
+    \includegraphics[width=2in]{data2.png}} \\
+    \caption{Unstructured data}
+    \label{3}
+\end{figure}
+\subsection{Why is deep learning take off?}
+In fact, the concept of neural network has appeared for decades. Actually, before learning this course, I think it is a new concept. So why is the neural network rising now? I get it after class. 
+\par
+Professor Wu gives a picture as Fig.~\ref{4}\cite{note}, where horizontal axis represents the amount of data for a task and the vertical axis represents the performance of the algorithm. In this curve, the performance improves as you add more data but after a while the
+performance tends to be flat. Now, firstly, because of the popularity of computers, mobile phones and various electronic devices, a lot of data have been collected. So much data is enough to train a very large neural network. In addition, the continuous improvement of hardware such as CPU and GPU also improves computing power. Moreover, in recent years, the innovation of algorithm has made the neural network run faster. There will be more and more data, and the continuous progress of hardware such as GPU, high-speed network, or other hardware will make the size of the future neural network become more and more large.
+\begin{figure}
+\begin{center}
+  % Requires \usepackage{graphicx}
+  \includegraphics[width=17.5cm]{4.png}\\
+  \caption{Scale drives deep learning progress}\label{4}
+\end{center}
+\end{figure}
+\par
+\section{Summarize}
+\par
+In this week, I get some knowledge about deep learning, deep learning is actually the training of neural networks. It include that input, output and neuron. A larger neural network which contain many hidden unit can be made up of small neural networks. 
+\par 
+With the development of deep learning, the computer vision also have a vital progress in the last few years. Deep learning have a vital help in image and speech recognition, language translation and automatic driving technology. And most development in deep leaning is that it makes computer understand unstructured data better.
+\par 
+Due to the collection of more data, the faster development of CPU and GPU, and the improvement of algorithm, neural network has developed faster and faster in recent years. And in the future, because the hardware will continue to improve, the data will continue to increase, and the algorithm will continue to be optimized, which will enable us to get more and more neural networks. 
+{\small
+\bibliographystyle{ieee}
+\bibliography{TheWeeklyReportOnDeepLearning}
+}
+
+\end{document}
+
+
+
