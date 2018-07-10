@@ -1,0 +1,84 @@
+\documentclass[10pt,twocolumn,letterpaper]{article}
+\usepackage{cvpr}
+\usepackage{enumerate}
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{cite}
+\usepackage{calc}
+\usepackage[pagebackref=true,breaklinks=true,letterpaper=true,colorlinks,bookmarks=false]{hyperref}
+\title{\textbf{Human Motion Capture Using a Drone}}
+\author{Zhang, Liqiang\\\\July 10, 2018}
+\cvprfinalcopy
+\def\cvprPaperID{****}
+\def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
+\begin{document}
+\maketitle
+\par
+\begin{abstract}
+Current motion capture (MoCap) system generally require markers and multiple calibrated cameras, which can be used only in constrained environments. In this paper, the author introduce a drone-based system for 3D human MoCap. The system only needs an autonomously flying drone with an on-board RGB camera and is usable in various indoor and outdoor environments. A reconstruction algorithm is developed to recover full-body motion from the video recorded by the drone. The author think that besides the capability of tracking a moving subject, a flying drone. Besides the capability of tracking a moving subject, a flying drone also provides fast varying viewpoints, which is beneficial for motion reconstruction. 
+\end{abstract}
+\section{Introduction}
+Capturing 3D human body motion is a challenging problem with many applications, e.g., in human-computer interaction health care and sports. This problem has been conditionally solved by multi-camera motion capture (MoCap) systems (e.g. Vicon and Qujalysis) in constrained studios\cite{Simo2012Single}. However, those MoCap systems suffer from their inflexibility and inconvenience: cameras require reliable fixation and frequent calibration, the tracking space is limited and fixed, and the subject should wear special markers. While being more challenging, image-based MoCap with an RGB camera has wider applicability and draws an increasing attention in recent years.
+\begin{figure}
+\begin{center}
+  % Requires \usepackage{graphicx}
+  \includegraphics[height=3.5cm]{1.png}\\
+  \caption{The drone orbits the human subject and records a video with an on-board RGB camera (left). The 3D full-body pose is recovered from the monocular video. The reconstructed pose in the example frame is visualized at a novel viewpoint (right)}\label{1}
+\end{center}
+\end{figure}
+\par
+Depite the remarkable advances in monocular 3D human pose estimation (see the related-work section), these methods suffer from the inherent ambiguity of single-view reconstruction. The ambiguity is alleviated by learning a 3D pose prior from existing MoCap datasets but cannot be resolved geometrically\cite{Guan2010Estimating}. Another line of work aims to leverage multi-frame information in a video to reconstruct a nonrigid shape, which is known as nonrigid structure from motion (NRSFM). However, NRSFM requires sufficiently fast camera motion relative to the ovject, which s impractical if the camera is fixed. 
+\par
+To address the above limitations of previous approaches, we propose a novel system for human body MoCap using a drone (Fig.~\ref{1}) leveraging the state-of-the -art techniques in autonomous drones and computer vision. An autonomously flying drone orbits and records a video of the subject providing fast varying viewpoints about the subject. A convolutional neural network (CNN) based 2D pose estimator produces reliable 2 tracks of body joints from the video, which are imput to a 3D pose estimator that robustly initializes reconstruction and suppresses outliers in the 2D tracks. Finally, a NRSFM algorithm is developed to further refine the reconstruction using sequence information and impose the articulation constraint of human body\cite{Paladini2009Factorization}.
+\section{Approaches}
+Suppose the 2D pose and 3D pose of the subject in frame $t$ are represented by $W_t\in\mathbb{R}^{2\times p}$ and $S_t\in\mathbb{R}^{3\times P}$ respectively, where $p$ is the number of joints. Following the general practice in NRSFM. An orthographic camera model is used and both $W_t$ and $S_t$ are centralized in Eq.~\ref{11}
+\begin{table*}
+\small
+\renewcommand\arraystretch{1.2}
+\centering
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\hline
+ & Box1 & Box2 & Walk1 & Walk2 & Soccer1 & Soccer2 & Mean \\
+\hline
+MF+NNM \cite{Wandt20163D}& 57.3 & 86.4 & 78.1 & 63.2 & 123.9 & 93.2 & 83.7 \\
+Initial & 74.0 & 86.7 & 62.0 & 77.0 & 75.7 & 78.4 & 75.6 \\
+Initial+BA & \textbf{53.9} & \textbf{70.6} & \textbf{41.1} & \textbf{47.2} & \textbf{56.3} & \textbf{62.6} & \textbf{55.3} \\
+\hline
+\end{tabular} 
+\caption{The mean reconstruction errors (MM) on the DroCap dataset}
+\label{tab1}
+\end{table*}
+\par
+\begin{equation}\label{11}
+\begin{split}
+W_t=R_tS_t
+\end{split}
+\end{equation}
+where $R_t\in\mathbb{R}^{2\times 3}$ denotes the first two rows of the camera rotation matrix at frame $t$. Given the 2D pose sequence $W=\{W_1,\cdots,W_n\}$, this team recover the 3D pose sequence $S=\{S_1,\cdots, S_n\}$ and the camera rotation sequence $R=\{R_1,\cdots, R_n\}$ by solving the following optimization problem in Eq.~\ref{12}
+\begin{equation}\label{12}
+\begin{split}
+\min_{S,R,L}f(S,R,L)+\alpha\Vert S^\#\Vert_*
+\end{split}
+\end{equation}
+where $f(S,R,L)$ is a smooth function composed of the following terms:
+\begin{equation}\label{13}
+\begin{split}
+f(S,R,L)=\sum_{t=1}^m\Vert W_t-R_tS_t\Vert_F^2+\gamma\Vert \ell(S)-L\Vert_F^2
+\end{split}
+\end{equation}
+\par
+The first term in Eq.~\ref{13} is the sun of reprojection errors over all joints in all frames. The second term enforces the articulation (anthropomorphic) constraint, i.e., the limb lenths should be reconstructed 3D structure is determined by the given 2D structure under the orthographic projection, the size of the reconstructed structure may vary in different frames depending on the distance from the camera to the subject. Therefore, instead of constraining limb lengths as constants, we enforce that the ratios between limb lengths to be unchanged across frames. Suppose $\ell(\cot)$ is a function such that the $t$-th column of $\ell(S)$ gives the squared limb lenths of $S_t$, $\ell(S)$ should be rank-1 if the articulation constraint is satisfied. To simplify the optimization, we minimize the difference between $\ell(S)$ and an auxiliary rank-1 matrix $L$ instead of directly constraining the rank of $\ell(S)$. $L$  is also unknown and updated during optimization. Note that $\ell(S)$ gives the squared lengths which are differentiable. 
+\section{DroCap dataset}
+The reconstruction errors at 12 joints (wrists, elbows, shoulders, hips, knees and ankles) are evaluated. The mean reconstruction errors for each sequence are given in Table~\ref{tab1}. ``Initial" and ``BA" denote single-frame initialization and multi-frame bundle adjustment, respectively. A baseline method ``MF + NNM" is included in comparison, where the
+2D joint tracks detected by the same CNN-based detector are input to the state-of-the-art NRSFM method, i.e., matrix factorization for initialization followed by nuclear norm minimization for structure refinement.
+{\small
+\bibliographystyle{ieee}
+\bibliography{HumanMotionCaptureUsingDrone}
+}
+\end{document}
