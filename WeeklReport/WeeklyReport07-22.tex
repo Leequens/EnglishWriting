@@ -1,0 +1,220 @@
+\documentclass[a4paper]{article}
+\usepackage{subfig}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{fullpage}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{amssymb}
+\usepackage{outline} 
+\usepackage{pmgraph} 
+\usepackage[normalem]{ulem}
+\usepackage{graphicx} 
+\usepackage{verbatim}
+\usepackage[pagebackref=true,breaklinks=true,letterpaper=true,colorlinks,bookmarks=false]{hyperref}
+% \usepackage{minted} % need `-shell-escape' argument for local compile
+\title{
+    \vspace*{1in}
+    \includegraphics[width=2.75in]{zhenglab-logo} \\
+    \vspace*{1.2in}
+    \textbf{\huge Weekly Work Report}
+    \vspace{0.2in}
+}
+
+\author{Zhang, Liqiang \\
+    \vspace*{0.5in} \\
+    \textbf{VISION@OUC} \\
+    \vspace*{1in}
+}
+
+\date{\today}
+
+
+\begin{document}
+
+\maketitle
+\setcounter{page}{0}
+\thispagestyle{empty}
+\newpage
+\section{Research problem}
+It's my honour to take part in underwater robot picking contest with classmates. My task is to collocation environment for YOLOv3. Before that, I never had experience and knowledge about this, so I'm a little scared about this work. But it's hard to begin with everything, therefore, I have access to some basic information on the Internet. 
+\section{Research approach}
+My initial approach is to search online tutorials such as CSDN blog and YOLO official network. There are usually very detailed steps on these websites.
+\section{Research progress}
+This is the first time I have carried out this research, and I have some deep learning and programming foundations, and I hope to learn more knowledge in the process of completing this study.
+\section{Progress in this week}
+\subsection{YOLOv3}
+\par
+YOLO is you only look once, which is a state-of-the-art, real-time object detection system. It official data show that it processes images at 30 FPS and has a mAP of 57.9\% on COCO test-devs On a Pascal Titan X. 
+\par
+Compared with other detectors, YOLOv3 is extremely fast and accurate. In mAP measured at .5 IOU YOLOv3 is on par with Focal Loss but about 4x faster. Moreover, we can easily trade off between speed and accuracy simply by changing the size of the model, no retraining required. Fig.~\ref{1} shows the inference time on YOLOv3 training.
+\begin{figure}[h]
+\begin{center}
+  % Requires \usepackage{graphicx}
+  \includegraphics[height=5cm]{1.png}\\
+  \caption{Inference time (ms) on YOLOv3}\label{1}
+\end{center}
+\end{figure}
+\subsection{Building the test environment for YOLOv3 \cite{note2}}
+On the YOLO's official website, it is clear how to download the program, use the following code, I can clone the algorithm program into the local folder. 
+\par
+\begin{lstlisting}[numbers=left, numberstyle=\tiny,keywordstyle=\color{blue!70},commentstyle=\color{red!50!green!50!blue!50},frame=shadowbox, rulesepcolor=\color{red!20!green!20!blue!20}] 
+git clone https://github.com/pjreddie/darknet
+cd darknet
+\end{lstlisting}
+\par
+Because I use GPU to train VOC data set. So I must modify the Makefile with the following code to make the algorithm use GPU. Using GPU to train the model can save a lot of time. When these files are set up, using the command of "make", YOLOv3 was built on the computer. 
+\begin{lstlisting}[numbers=left, numberstyle=\tiny,keywordstyle=\color{blue!70},commentstyle=\color{red!50!green!50!blue!50},frame=shadowbox, rulesepcolor=\color{red!20!green!20!blue!20}] 
+gedit Makefile
+GPU=1
+CUDNN=1
+...
+NVCC=/usr/local/cuda-8.0/bin/nvcc
+\end{lstlisting}
+\par
+I can run a demo on the YOLOv3 just being built on the computer, but before that I must download a weigh from following code.
+\begin{lstlisting}[numbers=left, numberstyle=\tiny,keywordstyle=\color{blue!70},commentstyle=\color{red!50!green!50!blue!50},frame=shadowbox, rulesepcolor=\color{red!20!green!20!blue!20}] 
+wget https://pjreddie.com/media/files/yolov3.weights
+\end{lstlisting}
+\par
+Now, I can run the detector.
+\begin{lstlisting}[numbers=left, numberstyle=\tiny,keywordstyle=\color{blue!70},commentstyle=\color{red!50!green!50!blue!50},frame=shadowbox, rulesepcolor=\color{red!20!green!20!blue!20}] 
+./darknet detect cfg/yolov3.cfg yolov3.weights data/dog.jpg
+\end{lstlisting}
+\begin{figure}[h]
+\begin{center}
+  % Requires \usepackage{graphicx}
+  \includegraphics[height=8.5cm]{predictions.png}\\
+  \caption{The demo.}\label{2}
+\end{center}
+\end{figure}
+The predictions as shown in the Fig~.\ref{2}. This is the first time I can run such a picture, so I feel very excited. Although these are some basic operations, I also explored it one by one and before that I have not a reserve of knowledge in this area. Teacher Yu tell me that I should train the VOC data set when I run a demo successfully. 
+On the YOLO's official website, there are the introduction for using YOLOv3 to train the VOC data set. 
+\par
+Firstly, to train YOLO I will need all of the VOC data from 2007 to 2012. To get all the data, make a directory to store it all and from that directory run:
+\begin{lstlisting}[numbers=left, numberstyle=\tiny,keywordstyle=\color{blue!70},commentstyle=\color{red!50!green!50!blue!50},frame=shadowbox, rulesepcolor=\color{red!20!green!20!blue!20}] 
+wget https://pjreddie.com/media/files/VOCtrainval_11-May-2012.tar
+wget https://pjreddie.com/media/files/VOCtrainval_06-Nov-2007.tar
+wget https://pjreddie.com/media/files/VOCtest_06-Nov-2007.tar
+tar xf VOCtrainval_11-May-2012.tar
+tar xf VOCtrainval_06-Nov-2007.tar
+tar xf VOCtest_06-No-2007.tar
+\end{lstlisting}
+\par
+Now I need to generate the label files that Darknet uses. Darknet wants a .txt file for each image with a line for each ground truth object in the image. To generate these file we will run the voc\_label.py script in Darknet's scripts, I can download it from following code.
+\begin{lstlisting}[numbers=left, numberstyle=\tiny,keywordstyle=\color{blue!70},commentstyle=\color{red!50!green!50!blue!50},frame=shadowbox, rulesepcolor=\color{red!20!green!20!blue!20}] 
+wget https://pjreddie.com/media/files/voc_label.py
+python voc_label.py
+\end{lstlisting}
+\par
+After a few minutes, this script will generate all of the requisite files.:
+\begin{lstlisting}[numbers=left, numberstyle=\tiny,keywordstyle=\color{blue!70},commentstyle=\color{red!50!green!50!blue!50},frame=shadowbox, rulesepcolor=\color{red!20!green!20!blue!20}] 
+ls
+2007_test.txt   VOCdevkit
+2007_train.txt  voc_label.py
+2007_val.txt    VOCtest_06-Nov-2007.tar
+2012_train.txt  VOCtrainval_06-Nov-2007.tar
+2012_val.txt    VOCtrainval_11-May-2012.tar
+\end{lstlisting}
+\par
+The text files like 2007\_train.txt list the image files for that year and image set. Darknet needs one text file with all of the images you want to train on. In this example, let's train with everything except the 2007 test set so that we can test our model. Run:
+\begin{lstlisting}[numbers=left, numberstyle=\tiny,keywordstyle=\color{blue!70},commentstyle=\color{red!50!green!50!blue!50},frame=shadowbox, rulesepcolor=\color{red!20!green!20!blue!20}] 
+cat 2007_train.txt 2007_val.txt 2012_*.txt > train.txt
+\end{lstlisting}
+Now go to my Darknet directory. I have to change the cfg/voc.data config file to point to the data:
+\begin{lstlisting}[numbers=left, numberstyle=\tiny,keywordstyle=\color{blue!70},commentstyle=\color{red!50!green!50!blue!50},frame=shadowbox, rulesepcolor=\color{red!20!green!20!blue!20}] 
+  1 classes= 20
+  2 train  = <path-to-voc>/train.txt
+  3 valid  = <path-to-voc>2007_test.txt
+  4 names = data/voc.names
+  5 backup = backup
+\end{lstlisting}
+After getting the weight from the darknet53 model, I can begin to train the model by running the command:
+\begin{lstlisting}[numbers=left, numberstyle=\tiny,keywordstyle=\color{blue!70},commentstyle=\color{red!50!green!50!blue!50},frame=shadowbox, rulesepcolor=\color{red!20!green!20!blue!20}] 
+wget https://pjreddie.com/media/files/darknet53.conv.74
+./darknet detector train cfg/voc.data cfg/yolov3-voc.cfg darknet53.conv.74
+\end{lstlisting}
+\subsection{Problems}
+Although I operated step by step according to official website commands, I still encountered some problems that could not be solved by me. During my training, the class  given by the terminal have been unstable, sometimes very small, and sometimes close to 1. The value of class should be closed to 1, but the value I got is very volatile. It did not converge after training for an afternoon. I inquire my senior Zhangshaoyong, he tell me that I can use the keras-YOLO3 which can test the video.
+\section{Keras-YOLO3}
+The environmental requirements of Keras-YOLO3 is very harsh, it need a conda environment. During establishing the virtual environment for Keras-YOLO3, I have a series of problems. It lack document or project. I set up an environment from From seven in the morning until nine in the evening. I was almost crazy during building the virtual environment, fortunately, I finally succeeded in establishing the environment, and successfully detected the portrait of my idol Jay Chou as Fig.\ref{3}. 
+\begin{figure}
+\begin{center}
+  % Requires \usepackage{graphicx}
+  \includegraphics[width=13cm,height=8.5cm]{jaychou.png}\\
+  \caption{Jay Chou.}\label{3}
+\end{center}
+\end{figure}
+\subsection{Training our own data}
+The problem I am facing now is how to transform the data used in the competition into VOC data format. The true value table given by the competition is rather chaotic. It is difficult to extract XML files from it. A program on the Internet does not apply to our TXT file. Finally, we find the help of Yuan Hao and have successfully extracted the XML files from the true value table. Now I have converted our data into VOC format.
+\section{Deep learning \cite{note1}}
+\subsection{How to Effectively Improve the Neural Network Foundation}
+We know that there are three datasets in deep learning: training datasets, dev datasets and test datasets. Actually we should guarantee that the origin of dev datasets and test datasets are from one. The factors that we should consider are various, such as layers, hidden units, learning rates and activation functions. Deep learning is a typical iteration process.
+\subsection{Bias and Variance}
+\begin{figure}
+\begin{center}
+  % Requires \usepackage{graphicx}
+  \includegraphics[height=6cm]{2.png}\\
+  \caption{Underfitting and overfitting.}\label{4}
+\end{center}
+\end{figure}
+By verifying the error we can get whether there is a high variance. Fig.~\ref{4} shows us the straightforward differences. We can use deeper neural network, add some train sets or choose other alogrithm to decrease the bias.
+\subsection{Regularization}
+In this subsection, Professor Wu show us L2 regularization as Eq.~\ref{11}, This is a way to solve high variance probelms. If there is an over-fitting, ie high variance, then regularization regularization needs to be solved. Although expanding the number of training samples is also a way to reduce high variance, the cost of obtaining more training samples is often too high and difficult. Therefore, a more feasible and effective way is to use regularization.
+\begin{equation}\label{11}
+J(w,b)=\frac{1}{m}\sum_{i=1}^{m}L(\hat{y}^{(i)},y^{(i)})+\frac{\lambda}{2m}\parallel{w}\parallel^{2}
+\end{equation}
+\par   76880076733
+The L1 regularization can be seen as Eq.~\ref{12}
+\begin{equation}\label{12}
+J(w,b)=\frac{1}{m}\sum_{i=1}^{m}L(\hat{y}^{(i)},y^{(i)})+\frac{\lambda}{2m}\parallel{w}\parallel_{1}
+\end{equation}
+\par
+Compared with L2 regularization, the l obtained by L1 regularization is more sparse, that is, many $w$ are zero. The advantage is that it saves storage space because most of the $w$ is zero. However, in fact L1 regularization is not superior to L2 regularization in solving high variance. Moreover, L1 is more complicated in terms of differential derivation. Therefore, general L2 regularization is more commonly used.
+\subsection{Dropout Regularization}
+\begin{figure}[h]
+\begin{center}
+  % Requires \usepackage{graphicx}
+  \includegraphics[height=6cm]{3.png}\\
+  \caption{Jay Chou.}\label{5}
+\end{center}
+\end{figure}
+The function of dropout is to delete the unit of the neural network randomly. Actually we hope there are less training sets. Assume that for the first layer of neurons, set the probability of keeping the neuron proportional keep prob = 0.8, that is, 20\% of the neurons in the layer stop working. $d^l$ s the dropout vector, and $d^l$ is set to a
+random vector, where 80\% of the elements are 1, and 20\% of the elements are 0.
+\par
+For $m$ samples, a single iteration of training randomly deletes a certain number of neurons in the hidden layer; then, the weights and constants b are updated forward and backward on the remaining neurons after deletion; In one iteration, the previously deleted neurons are restored, a certain number of neurons are randomly deleted, and w and b are updated in the forward and reverse directions.
+\subsection{Normalizing Inputs}
+Normalized input is the normalization of the training data set, that is, the original data is subtracted from its mean $\mu$, and then divided by its variance $\sigma^2$ as Fig.~\ref{6}.
+\par
+The result of this is that the cost function and the relationship between $w$ and $b$ may be a very slender oval bowl. When the gradient descent algorithm is applied to it, since the values of $w1$ and $w2$ are very different, only a small learning factor $\alpha$ can be selected to avoid $J$ oscillation. Once $\alpha$ is large, oscillation will inevitably occur, and $J$ will no longer monotonically decrease.
+\begin{figure}[h]
+\begin{center}
+  % Requires \usepackage{graphicx}
+  \includegraphics[height=7cm]{4.png}\\
+  \caption{Normalization.}\label{6}
+\end{center}
+\end{figure}
+\subsection{Mini-batch Gradient Descent}
+$m$ is the number of samples. If $m$ is large, for example, on the order of a million, the training speed tends to be slow, because all samples are summed and matrixed for each iteration. This process calls gradient descent algorithm Batch Gradient Descent.The implementation of Mini-batches Gradient Descent is to divide the total training samples into $T$ subsets (mini-batches), then perform neural network training for each mini-batch, including Forward Propagation, Compute Cost Function, Backward Propagation, and cycle to $T$ mini-batch are trained. 
+\par
+The Batch gradient descent will be closer to the global minimum, but because of the
+use of all m samples, the speed of each advance is somewhat slow. Stachastic gradient descent is very fast
+every time, but the route twists and turns, there is a large oscillation, and finally will fluctuate around the minimum value, it is difficult to really reach the minimum. Moreover, vectorization cannot be used to improve the speed of calculation in numerical processing.
+\section{Plan}
+\begin{tabular}{rl}
+	\textbf{Objective:} & Training contest data and testing the test set. \\
+    \textbf{Deadline:} & 2018.07.29.
+\end{tabular}
+\begin{description}
+    \item[\normalfont 2018.07.23---2018.07.25] Training contest data.
+    \item[\normalfont 2018.07.26---2018.07.29] Testing the test set.
+    lot lot lot of things.
+\end{description}
+{\small
+\bibliographystyle{ieee}
+\bibliography{WorkReport}
+}
+\end{document}
