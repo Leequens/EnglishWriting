@@ -1,0 +1,81 @@
+\documentclass[10pt,twocolumn,letterpaper]{article}
+\usepackage{cvpr}
+\usepackage{enumerate}
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{cite}
+\usepackage{calc}
+\usepackage[pagebackref=true,breaklinks=true,letterpaper=true,colorlinks,bookmarks=false]{hyperref}
+\title{\textbf{YOLOv3: An Incremental Improvement}}
+\author{Zhang, Liqiang\\\\July 27, 2018}
+\cvprfinalcopy
+\def\cvprPaperID{****}
+\def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
+\begin{document}
+\maketitle
+\par
+\begin{abstract}
+I continue to read this paper in this week. YOLOv3 is still fast but more accurate. At $320\times 320$ YOLOv3 runs in 22 ms at 28.2 mAP, as accurate as SSD but three times faster. YOLOv3 is quite good for the old .5 IOU mAP detection metric. It achieves 57.9 AP$_{50}$ in 51 ms on a Titan X, compared to 57.5 AP$_{50}$ in 198 ms by RetinaNet, similar performance but 3.8 $\times$ faster. 
+\end{abstract}
+\section{Class Prediction}
+In YOLOv3, each box predicts the classes the bounding box may contain using multilabel classification. It use a softmax as the author have found it is unnecessary for good performance, instead they simply use independent logistic classifiers.
+\par 
+This formulation helps when moving to more complex domains like the Open Images Dataset \cite{Lin2016Feature}. In this dataset there are many overlapping labels. Using a softmax imposes the assumption that each box has exactly one class which is often not the case. A multilabel approach better models the data.
+\section{Predictions Across Scale}
+YOLOv3 predicts boxes at 3 different scales. This system extracts features from those scales using a similar concept to feature pyramid networks. From this base feature extractor add several convolutional layers. The last of these predicts a 3-d tensor encoding bounding box, objectness, and class predictions. In this experiments with COCO \cite{Lin2014Microsoft} it predict 3 boxes at each scale so the tensor is $N\times N\times [3\ast(4+1+80)]$ for the 4 bounding box offsets, 1 objectness prediction, and 80 class predictions.	 
+\par 
+Next this team take the feature map from 2 layers previous and upsample it by 2$\times$. They also take a feature map from earlier in the network and merge it with their upsampled features using concatenation. This method allows them to get more meaningful semantic information from the upsampled features and finer-grained information from the earlier feature map. They then add a few more convolutional layers to process this combined feature map, and eventually predict a similar tensor, although now twice the size. In Fig.~\ref{1}, it shows that the author predict the width and height of the box as offsets
+from cluster centroids. They predict the center coordinates of the box relative to the location of filter application using a sigmoid function.
+\begin{figure}
+	\begin{center}
+		% Requires \usepackage{graphicx}
+		\includegraphics[height=5.5cm]{1.png}\\
+		\caption{Bounding boxes with dimension priors and location prediction.}\label{1}
+	\end{center}
+\end{figure}
+\par 
+\section{Feature Extractor}
+YOLOv3 use a new network for performing feature extraction. This new network is a hybrid approach between the network used in YOLOv2, Darknet-19, and that newfangled residual network stuff. The network uses successive 3 $\times$ 3 and 1 $\times$ 1 convolutional layers but now has some shortcut connections as well and is significantly larger. It has 53 convolutional
+layers so the author call it Darknet-53.
+\par 
+This new network is much more powerful than Darknet-19 but still more efficient than ResNet-101 or ResNet-152. Some ImageNet results shows in Table~\ref{1}:
+\begin{table}
+	\small
+	\renewcommand\arraystretch{1.2}
+	\centering
+\begin{tabular}{c|c|c|c|c|c}
+
+	Backbone & Top-1 & Top-5 & Bn Ops & BFLOP/s & FPS \\
+	\hline
+	Darknet-19 \cite{Redmon2017YOLO9000} & 74.1 & 91.8 & 7.29 & 1246 & \textbf{171} \\
+
+	ResNet-101 \cite{He2015Deep} & 77.1 & 93.7 & 19.7 & 1039 & 53 \\
+
+	ResNet-152 \cite{He2015Deep} & \textbf{77.6} & \textbf{93.8} & 29.4 & 1090 & 37 \\
+
+	Darknet-53 & 77.2 & \textbf{93.8} & 18.7 & \textbf{1457} & 78 \\
+
+\end{tabular} 
+\caption{\textbf{Comparison of backbones}. Accuracy, billions of operations, billion floating point operations per second, and FPS for various networks.}
+\label{tab1}
+\end{table}
+\par
+Each network is trained with identical settings and tested at 256 $\times$ 256, single crop accuracy. Run times are measured on a Titan X at 256 $\times$ 256. Thus Darknet-53 performs on par with state-of-the-art classifiers but with fewer floating point operations and more speed. Darknet-53 is better than ResNet-101 and 1.5 $\times$ faster. Darknet-53 has similar performance to ResNet-152 and is 2 $\times$ faster.
+\par
+Darknet-53 also achieves the highest measured floating point operations per second. This means the network structure better utilizes the GPU, making it more efficient to evaluate and thus faster. That's mostly because ResNets have just way too many layers and aren't very efficient.
+\section{Training}
+YOLOv3 still train on full images with no hard negative mining or any of that stuff. It use multi-scale training, lots of data
+augmentation, batch normalization, all the standard stuff and use the Darknet neural network framework for training and testing.
+{\small
+	
+\bibliographystyle{ieee}
+\bibliography{YOLOv3}
+}
+
+\end{document}
