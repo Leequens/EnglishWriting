@@ -1,0 +1,179 @@
+\documentclass[a4paper]{article}
+\usepackage{subfig}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{fullpage}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{amssymb}
+\usepackage{outline} 
+\usepackage{pmgraph} 
+\usepackage[normalem]{ulem}
+\usepackage{graphicx} 
+\usepackage{verbatim}
+\usepackage[pagebackref=true,breaklinks=true,letterpaper=true,colorlinks,bookmarks=false]{hyperref}
+% \usepackage{minted} % need `-shell-escape' argument for local compile
+\title{
+	\vspace*{1in}
+	\includegraphics[width=2.75in]{zhenglab-logo} \\
+	\vspace*{1.2in}
+	\textbf{\huge Weekly Work Report}
+	\vspace{0.2in}
+}
+
+\author{Zhang, Liqiang \\
+	\vspace*{0.5in} \\
+	\textbf{VISION@OUC} \\
+	\vspace*{1in}
+}
+
+\date{\today}
+
+
+\begin{document}
+	
+	\maketitle
+	\setcounter{page}{0}
+	\thispagestyle{empty}
+	\newpage
+\section{Research problem}
+Converting the dataset of contest to VOC2007 format and training the dataset of contest in keras-yoolo3.
+\section{Research approach}
+
+\section{Research progress}
+Now, the environment for keras-yolo has been assembled in the server. And the xml files of contest dataset has been generated from the true value table by me.
+\section{Progress in this week}
+\subsection{Generating the txt files for yolo3 \cite{note2}}
+Before generating these txt files, I should modify the file named voc\_annotation.py. Because we have three classes in contest dataset, I should change the classes in voc\_annotation.py to seacucumber, seaurchin and scallop. OK, I will get three txt files called 2007\_test.txt, 2007\_train.txt and 2007\_val.txt, which will be used in the process of train
+\par
+Next, I replaced the train.py file with online tutorials, and run the following code.
+\begin{lstlisting}[numbers=left, numberstyle=\tiny,keywordstyle=\color{blue!70},commentstyle=\color{red!50!green!50!blue!50},frame=shadowbox, rulesepcolor=\color{red!20!green!20!blue!20}] 
+source activate py36 # Geting into the environment
+python train.py -gpus 1 # Using the GPU 1. 
+\end{lstlisting}
+Though I use the command -gpus 1, the CPU is still used in the training model. I go online to find the relevant information, someone says it will work if I code to force GPU in front of train.py. But it will generate a new error that I can't modify the value.
+\par
+I query this error online and find that there is very little information available. I have no way to go but rebuild a new environment, it takes me 10 minutes to build a new environment named Leequens on conda and try to run the code:
+\begin{lstlisting}[numbers=left, numberstyle=\tiny,keywordstyle=\color{blue!70},commentstyle=\color{red!50!green!50!blue!50},frame=shadowbox, rulesepcolor=\color{red!20!green!20!blue!20}] 
+source activate Leequens # Geting into the 
+python train.py -gpus 1 # Using the GPU 1. 
+\end{lstlisting}
+\begin{figure}[h]
+	\begin{center}
+		% Requires \usepackage{graphicx}
+		\includegraphics[height=6.5cm]{1.png}\\
+		\caption{The demo.}\label{2}
+	\end{center}
+\end{figure}
+OK, it works by GPU as Fig.~\ref{1}. When I finished my meal and returned to the lab, I find that the loss has not been reduced, but it has increased. I looked at train.py and find that learning rate is 0.1 which is so big, it is modified to 0.001 by me because 0.001 is a classical value. I hope that loss will perform well this time.
+\par 
+In the morning on Tuesday, I find that the decline of loss is not obvious, after 78 epoch times, loss is about 85 which is not the result I want. Normally, the value of loss should be in decline. But I really can't figure out what's wrong, I have to wait and see whether the value of loss will be accepted in the later training.
+\par 
+In the afternoon, the senior Zhangshaoyong plan to check our dataset and find that the ratio of training set and test set of our dataset is not suitable. We should make the ratio of training set to test machine 10 to 1. So I rearranged the data set according to the requirements.
+\par
+\subsection{Arranging the dataset}
+I rearranged the catalog of the data set according to the requirements. In the folder of JPEGImages, I divide it into two sub folders, train and test respectively. In train folder, there have five sub folders which correspond to five segments of video. And there is one folder contain one segments of video. It's the same as JPEGImages, the folder of Annotations still have two sub folders called train and test as Fig.~\ref{2}. The name of image should be renamed from 000000.jpg to xxxxxx.jpg in every sub folder.
+\begin{figure}[h]
+	\begin{center}
+		% Requires \usepackage{graphicx}
+		\includegraphics[height=7cm]{2.jpg}\\
+		\caption{The structure of data set.}\label{2}
+	\end{center}
+\end{figure}
+\par 
+Next, I must think how to generate the files named tarin.txt, test.txt and val.txt. It seems so hard because there are many same name in five sub folders and the content of train just contain the name of images without path in the VOC dataset. I must add the path to new train.txt so I it is a little complex. Because if I use the new train.txt, I must modify the file voc\_label.py which can convert the train.txt to 2007\_train.txt. 
+OK, I can only do it step by step. It is easy to generate train files before, and just input the names by the code. But now I must add the path. it could not be work only by myself, so I go to Internet search for some information. People with ability are everywhere. I have found a way to create a path file with only one code.
+\begin{lstlisting}[numbers=left, numberstyle=\tiny,keywordstyle=\color{blue!70},commentstyle=\color{red!50!green!50!blue!50},frame=shadowbox, rulesepcolor=\color{red!20!green!20!blue!20}] 
+ls -R /home/ouc/Zhangliqiang/datasets/Image/G0024172/*.jpg > train1.txt
+ls -R /home/ouc/Zhangliqiang/datasets/Image/G0024173/*.jpg > train2.txt
+ls -R /home/ouc/Zhangliqiang/datasets/Image/G0024174/*.jpg > train3.txt
+ls -R /home/ouc/Zhangliqiang/datasets/Image/YDXJ0003/*.jpg > train4.txt
+ls -R /home/ouc/Zhangliqiang/datasets/Image/YDXJ0013/*.jpg > train5.txt
+ls -R /home/ouc/Zhangliqiang/datasets/Image/YDXJ0012/*.jpg > test.txt
+\end{lstlisting}
+Using the code above, I get five train files and one test files. Now what I am facing is how to concentrate these five files into one document, which is a easy job, I just need run the following code:
+\begin{lstlisting}[numbers=left, numberstyle=\tiny,keywordstyle=\color{blue!70},commentstyle=\color{red!50!green!50!blue!50},frame=shadowbox, rulesepcolor=\color{red!20!green!20!blue!20}] 
+cat train1.txt >>train.txt
+cat train2.txt >>train.txt
+cat train3.txt >>train.txt
+cat train4.txt >>train.txt
+cat train5.txt >>train.txt
+\end{lstlisting}
+The content of new train.txt as Fig.\ref{3}, which contain all the path information of every training image. Next, I need use voc\_label.py to convert the train.txt to 2007\_train.txt which can be used in YOLO training. But it will report errors if I run the python voc\_label.py. It takes me two hours to modify it and search information, but I don't have any results. 
+\begin{figure}[h]
+	\begin{center}
+		% Requires \usepackage{graphicx}
+		\includegraphics[height=10cm]{3.jpg}\\
+		\caption{The content of train.txt.}\label{3}
+	\end{center}
+\end{figure}
+\par
+\subsection{Beginning to train \cite{note1}}
+When I have any method to solve this problem I look over the old file named 2007\_train.txt. I find it is similar to new train.txt generated by me. but 2007\_train.txt have the coordinate information. I want to try to use train.txt replace it to train. If YOLO can begin to train, which shows that this method is effective. 
+\begin{figure}[h]
+	\begin{center}
+		% Requires \usepackage{graphicx}
+		\includegraphics[height=8cm]{4.png}\\
+		\caption{Begning to train.}\label{4}
+	\end{center}
+\end{figure}
+\par
+I implemented this method and it begin to train successfully as Fig.~\ref{4}, the value of loss also begin to  decline. But I afraid that it will generate a module which can not test because my train.txt have not coordinate information. It still need three hours to complete this training when write this report, I hope that I wll get a good result.
+\par
+\section{Modifying the code}
+Well... I get a bad result. This competition is for us to test sea cucumbers, sea urchins, scallops, but I use my module to have a test with test set. I find that my module can distinguish the starfish without any sea cucumbers, sea urchins and scallops. I am so crumble that I want to smash the computer. Calm down and think about it, it must have some problem in train.txt which have not coordinate information.
+\par
+ I can only sort out the data and make the image stored in one folder. Only in this way can I generate a train.txt which contain coordinte information. I afraid that I spend one day to train my module but it can not work, so I make the epoch be equal to 20. 
+ \par 
+ When it finish I input a image to see if I could test it and it works! But it have a bad effect. I think the reason is that epoch is so small. So, I've added epoch to 200 and begin to train!
+\section{Testing}
+After 150 times of epoch, I find that the value of loss has been floating around 75, which is too big. I took out a temporary model to test the pictures with an anxious mood because I think the result will not good. Indeed, The result is so bad as Fig.~\ref{5} to Fig.~\ref{8}.
+\par
+I don't know where something went wrong, which makes the value of loss is so high and have such a poor detection effect. The next task is to solve this problem.
+\section{Plan}
+\begin{tabular}{rl}
+	\textbf{Objective:} & Solving the problem of high loss and completing mAP calculation. \\
+	\textbf{Deadline:} & 2018.08.05.
+\end{tabular}
+\begin{description}
+	\item[\normalfont 2018.07.30---2018.08.02] Solving the problem of high loss.
+	\item[\normalfont 2018.08.02---2018.08.05] Completing mAP calculation. 
+\end{description}
+{\small
+	\bibliographystyle{ieee}
+	\bibliography{WeeklyReport}
+}
+\begin{figure}
+	\begin{center}
+		% Requires \usepackage{graphicx}
+		\includegraphics[height=3.5cm]{5.jpg}\\
+		\caption{Sample.}\label{5}
+	\end{center}
+\end{figure}
+\begin{figure}
+	\begin{center}
+		% Requires \usepackage{graphicx}
+		\includegraphics[height=3.5cm]{6.jpg}\\
+		\caption{Sample.}\label{6}
+	\end{center}
+\end{figure}
+\begin{figure}
+	\begin{center}
+		% Requires \usepackage{graphicx}
+		\includegraphics[height=3.5cm]{7.jpg}\\
+		\caption{Sample.}\label{7}
+	\end{center}
+\end{figure}
+\begin{figure}
+	\begin{center}
+		% Requires \usepackage{graphicx}
+		\includegraphics[height=3.5cm]{8.jpg}\\
+		\caption{Sample.}\label{8}
+	\end{center}
+\end{figure}
+
+
+\end{document}
