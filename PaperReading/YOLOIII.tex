@@ -1,0 +1,72 @@
+\documentclass[10pt,twocolumn,letterpaper]{article}
+\usepackage{cvpr}
+\usepackage{enumerate}
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{cite}
+\usepackage{calc}
+\usepackage[pagebackref=true,breaklinks=true,letterpaper=true,colorlinks,bookmarks=false]{hyperref}
+\title{\textbf{YOLOv3: An Incremental Improvement}}
+\author{Zhang, Liqiang\\\\August 3, 2018}
+\cvprfinalcopy
+\def\cvprPaperID{****}
+\def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
+\begin{document}
+\maketitle
+\par
+\begin{abstract}
+YOLOv3 is still fast but more accurate. At $320\times 320$ YOLOv3 runs in 22 ms at 28.2 mAP, as accurate as SSD but three times faster. YOLOv3 is quite good for the old .5 IOU mAP detection metric. It achieves 57.9 AP$_{50}$ in 51 ms on a Titan X, compared to 57.5 AP$_{50}$ in 198 ms by RetinaNet, similar performance but 3.8 $\times$ faster. All the code is online at \url{https://pjreddie.com/yolo/}.
+\end{abstract}
+\section{Introduction}
+Under the background of GANS, the author has made some improvements to the previous YOLO algorithm. 
+\par
+In this paper, first The author tell us what the deal is with YOLOv3. Then author tell us how they do. They also tell about some things they tried that didn’t work. Finally They will contemplate what this all means.
+\section{Bounding Box Prediction}
+Here’s the deal with YOLOv3: The author trained a new classifier network that’s better than the other ones. Fig.~\ref{1} can show the speed of YOLOv3. 
+\par
+Following YOLO9000 the our system predicts bounding boxes using dimension clusters as anchor boxes. The network predicts 4 coordinates for each bounding box, $t_x, t_y, t_w, t_h$\cite{He2015Deep}. If the cell is offset from the top left corner of the image by ($c_x, c_y$) and the bounding box prior has width and height $p_w, p_h$, then the predictions correspond to the Eq.~\ref{11}:
+\begin{equation}\label{11}
+\begin{split}
+b_x=\sigma(t_x)+c_x \\
+b_y=\sigma(t_y)+c_y \\
+b_w=p_we^{t_w} \\
+b_h=p_he^{t_h} \\
+\end{split}
+\end{equation}
+YOLOv3 predicts an objectness score for each bounding box using logistic regression. This should be 1 if the bounding box prior overlaps a ground truth object by more than any other bounding box prior. If the bounding box prior is not the best but does overlap a ground truth object by more than some threshold the author ignore the prediction, following.
+\section{Predictions Across Scale}
+YOLOv3 predicts boxes at 3 different scales. This system extracts features from those scales using a similar concept to feature pyramid networks. From this base feature extractor add several convolutional layers. The last of these predicts a 3-d tensor encoding bounding box, objectness, and class predictions. In this experiments with COCO  it predict 3 boxes at each scale so the tensor is $N\times N\times [3\ast(4+1+80)]$ for the 4 bounding box offsets, 1 objectness prediction, and 80 class predictions.	 
+\par 
+Next this team take the feature map from 2 layers previous and upsample it by 2$\times$. They also take a feature map from earlier in the network and merge it with their upsampled features using concatenation. This method allows them to get more meaningful semantic information from the upsampled features and finer-grained information from the earlier feature map. They then add a few more convolutional layers to process this combined feature map, and eventually predict a similar tensor, although now twice the size\cite{Redmon2017YOLO9000}. It shows that the author predict the width and height of the box as offsets
+from cluster centroids. They predict the center coordinates of the box relative to the location of filter application using a sigmoid function.
+\subsection{Class Prediction}
+Each box predicts the classes the bounding box may contain using multilabel classification. The author do not use a softmax as they have found it is unnecessary for good performance, instead they simply use independent logistic classifiers. During training they use binary cross-entropy loss for the class
+predictions.
+\par 
+\begin{figure*}
+	\begin{center}
+		% Requires \usepackage{graphicx}
+		\includegraphics[height=10cm]{1.png}\\
+		\caption{Again adapted from the \cite{Lin2017Focal}, this time displaying speed/accuracy tradeoff on the mAP at .5 IOU metri}\label{1}
+	\end{center}
+\end{figure*}
+\section{Things that the author didn't do}
+\textbf{Anchor box} $x,y$ \textbf{offset predictions.} The author tried using the normal anchor box prediction mechanism where you predict the $x,y$ offset as a multiple of the box width or height using a linear activation. 
+\par
+\textbf{Linear} $x,y$ \textbf{predictions instead of logistic}. The author tried using a linear activation to directly predict the $x,y$ offset instead of the logistic activation. This led to a couple point drop in mAP.
+\par
+\textbf{Focal loss.} The author tried using focal loss. It dropped their mAP about 2 points. YOLOv3 may already be robust to the problem focal loss is trying to solve because it has separate objectness predictions and conditional class predictions. Thus for most  examples there is no loss from the class predictions? Or something? They aren’t totally sure.
+
+{\small
+	
+	\bibliographystyle{ieee}
+	\bibliography{YOLOIII}
+}
+
+\end{document}
