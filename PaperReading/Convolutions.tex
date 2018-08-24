@@ -1,0 +1,77 @@
+\documentclass[10pt,twocolumn,letterpaper]{article}
+\usepackage{cvpr}
+\usepackage{enumerate}
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{cite}
+\usepackage{calc}
+\usepackage[pagebackref=true,breaklinks=true,letterpaper=true,colorlinks,bookmarks=false]{hyperref}
+\title{\textbf{Going Deeper with Convolutions}}
+\author{Zhang, Liqiang\\\\August 24, 2018}
+\cvprfinalcopy
+\def\cvprPaperID{****}
+\def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
+\begin{document}
+\maketitle
+\par
+\begin{abstract}
+In this paper propose a deep convolutional neural network architecture codenamed Inception, which was responsible for setting the new state of the art for classification and detection in the ImageNet Large-Scale Visual Recognition Challenge 2014 (ILSVRC14). The main hallmark of this architecture is the improved utilization of the computing resources inside the network. This was achieved by a carefully crafted design that allows for increasing the depth and width of the network while keeping the computational budget constant. To optimize quality, the architectural decisions were based on the Hebbian principle and the intuition of multi-scale processing. One particular incarnation used in our submission for ILSVRC14 is called GoogLeNet, a 22 layers deep network, the quality of which is assessed in the context of classification and detection.
+\end{abstract}
+\section{Introduction}
+In the last three years, mainly due to the advances of deep learning, more concretely convolutional networks, the quality of image recognition and object detection has been progressing at a dramatic pace. One encouraging news is that most of this progress is not just the result of more powerful hardware, larger datasets and bigger models, but mainly a consequence of new ideas, algorithms and improved network architectures. No new data sources were used, for example, by the top entries in the ILSVRC 2014 competition besides the classification dataset of the same competition for detection purposes.	The biggest gains in object detection have not come from the utilization of deep networks alone or bigger models, but from the synergy of deep architectures and classical computer vision, like the R-CNN algorithm by Girshick \emph{et al.}\cite{Krizhevsky2012ImageNet}.
+\par
+In this paper, we will focus on an efficient deep neural network architecture for computer vision, codenamed Inception, which derives its name from the Network in network paper by Lin \emph{et al.}\cite{Dean2012Large} in conjunction with the famous ``we need to go deepe'' internet meme. Bigger size typically means a larger number of parameters, which makes the enlarged network more prone to overfitting,  especially if the number of labeled examples in the training set is limited. This can become a major bottleneck, since the creation of high quality training sets can be tricky and expensive, especially if expert human raters are necessary to distinguish between fine-grained visual categories like those in ImageNet (even in the 1000-class ILSVRC subset) as demonstrated by Fig.~\ref{1}.
+\begin{figure}
+\begin{center}
+  % Requires \usepackage{graphicx}
+  \includegraphics[height=3.5cm,width=8.5cm]{1.jpg}\\
+  \caption{Two distinct classes from the 1000 classes of the ILSVRC 2014 classification challenge.}\label{1}
+\end{center}
+\end{figure}
+\section{Architectural Details}
+This leads to the second idea of the proposed architecture:  judiciously applying dimension reductions and projections wherever the computational requirements would increase too much otherwise. This is based on the success of embeddings: even low dimensional embeddings might contain a lot of information about a relatively large image patch. However, embeddings represent information in a dense, compressed form and compressed information is harder to model. The author would like to keep
+our representation sparse at most places (as required by the conditions of \cite{3}) and compress the signals only whenever they have to be aggregated en masse. That is, ${\rm 1\times 1}$ convolutions are used to compute reductions before the expensive ${\rm 3\times 3}$ and
+${\rm 5\times 5}$ convolutions. Besides being used as reductions, they also include the use of rectified linear activation which makes them dual-purpose. The final result is depicted in Fig.~\ref{2}.
+\begin{figure*}
+\begin{center}
+  % Requires \usepackage{graphicx}
+  \includegraphics[height=6cm,width=18cm]{3.png}\\
+  \caption{nception module.}\label{2}
+\end{center}
+\end{figure*}
+
+\begin{table*}
+\small
+\renewcommand\arraystretch{1.2}
+\centering
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+Team & Year & Place & mAP & external data & ensemble & approach \\
+\hline
+UvA-Euvision & 2013 & 1st & 22.6\% & none & ? & Fisher vectors \\
+\hline
+Deep Insight & 2014 & 3rd & 40.5\% & ImageNet 1k & 3 & CNN \\
+\hline
+CUHK DeepID-Net & 2014 & 2nd & 40.7\% & ImageNet 1k & ? & CNN \\
+\hline
+GoogLeNet & 2014 & 1st & 43.9\% & ImageNet 1k & 6 & CNN \\
+\hline
+\end{tabular} 
+\caption{Detection performance.} \label{tab1}
+\end{table*}
+\section{ILSVRC 2014 Detection Challenge Setup and Results}
+The author report the official scores in Table~\ref{tab1} and common strategies for each team: the use of external data, ensemble models or contextual models. The external data is typically the ILSVRC12 classification data for pre-training a model that is later refined on the detection data. Some teams also mention the use of the localization data. Since a good portion of the localization task bounding boxes are not included in the detection dataset, one can pre-train a general bounding box regressor with this data the same way classification is used for pre-training. The GoogLeNet entry did not use the localization data for pretraining.
+
+
+{\small
+\bibliographystyle{ieee}
+\bibliography{GoingDeeperWithConvolutions}
+}
+
+\end{document}
